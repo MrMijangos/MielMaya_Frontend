@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/.css/productos.css">
+    <link rel="stylesheet" href="/.css/principal.css"> 
+    
+    <title>Todos Nuestros Productos - Miel de la Selva Maya</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="/index.html">
+                    <img src="/images/LOGO.png" alt="Logo Miel de la Selva Maya">
+                </a>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar productos...">
+                <button type="button" class="search-btn">
+                    <img src="/images/buscar.png" alt="Buscar">
+                </button>
+            </div>
+            
+            <div class="header-icons">
+                <button class="icon-btn cart-btn" id="cartButton">
+                    <img src="/images/carrito-de-compras.png" alt="Ver carrito">
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="icon-btn user-btn">
+                    <img src="/images/perfil.png" alt="Iniciar sesión">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h2>MI CARRITO</h2>
+            <button class="cart-close-btn" id="closeCartBtn">✕</button>
+        </div>
+
+        <div class="cart-items" id="cartItems"></div>
+
+        <div class="cart-sidebar-footer">
+            <div class="cart-subtotal">
+                <span>SUBTOTAL:</span>
+                <span class="cart-total-price" id="cartTotal">$0</span>
+            </div>
+            <button class="btn-checkout">PROCEDER AL PAGO</button>
+        </div>
+    </div>
+
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <!-- El User Sidebar se inyectará automáticamente desde header.js -->
+
+    <section class="features-section">
+    </section>
+
+    <section class="products-section">
+        <div class="section-header">
+            <h2 class="section-title">TODOS NUESTROS PRODUCTOS</h2>
+            <p class="section-subtitle">Los mejores de nuestros productos<br>según nuestros clientes</p>
+        </div>
+        
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Pura">
+                </div>
+                <h3 class="product-name">MIEL PURA</h3>
+                <p class="product-price">$120</p>
+                <button class="btn-add-cart"
+                        data-id="1"
+                        data-name="MIEL PURA"
+                        data-price="120"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Pura">
+                </div>
+                <h3 class="product-name">MIEL PURA</h3>
+                <p class="product-price">$120</p>
+                <button class="btn-add-cart"
+                        data-id="2"
+                        data-name="MIEL PURA"
+                        data-price="120"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Pura">
+                </div>
+                <h3 class="product-name">MIEL PURA</h3>
+                <p class="product-price">$120</p>
+                <button class="btn-add-cart"
+                        data-id="3"
+                        data-name="MIEL PURA"
+                        data-price="120"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Pura">
+                </div>
+                <h3 class="product-name">MIEL PURA</h3>
+                <p class="product-price">$120</p>
+                <button class="btn-add-cart"
+                        data-id="4"
+                        data-name="MIEL PURA"
+                        data-price="120"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Pura">
+                </div>
+                <h3 class="product-name">MIEL PURA</h3>
+                <p class="product-price">$120</p>
+                <button class="btn-add-cart"
+                        data-id="5"
+                        data-name="MIEL PURA"
+                        data-price="120"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Pura">
+                </div>
+                <h3 class="product-name">MIEL PURA</h3>
+                <p class="product-price">$120</p>
+                <button class="btn-add-cart"
+                        data-id="6"
+                        data-name="MIEL PURA"
+                        data-price="120"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Orgánica">
+                </div>
+                <h3 class="product-name">MIEL ORGÁNICA</h3>
+                <p class="product-price">$150</p>
+                <button class="btn-add-cart"
+                        data-id="7"
+                        data-name="MIEL ORGÁNICA"
+                        data-price="150"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel de Flores">
+                </div>
+                <h3 class="product-name">MIEL DE FLORES</h3>
+                <p class="product-price">$130</p>
+                <button class="btn-add-cart"
+                        data-id="8"
+                        data-name="MIEL DE FLORES"
+                        data-price="130"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Premium">
+                </div>
+                <h3 class="product-name">MIEL PREMIUM</h3>
+                <p class="product-price">$180</p>
+                <button class="btn-add-cart"
+                        data-id="9"
+                        data-name="MIEL PREMIUM"
+                        data-price="180"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Natural">
+                </div>
+                <h3 class="product-name">MIEL NATURAL</h3>
+                <p class="product-price">$125</p>
+                <button class="btn-add-cart"
+                        data-id="10"
+                        data-name="MIEL NATURAL"
+                        data-price="125"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel de Abeja">
+                </div>
+                <h3 class="product-name">MIEL DE ABEJA</h3>
+                <p class="product-price">$140</p>
+                <button class="btn-add-cart"
+                        data-id="11"
+                        data-name="MIEL DE ABEJA"
+                        data-price="140"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="/images/productosmiel" alt="Miel Especial">
+                </div>
+                <h3 class="product-name">MIEL ESPECIAL</h3>
+                <p class="product-price">$160</p>
+                <button class="btn-add-cart"
+                        data-id="12"
+                        data-name="MIEL ESPECIAL"
+                        data-price="160"
+                        data-image="/images/productosmiel">
+                    AÑADIR AL CARRITO
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="reviews-section">
+    </section>
+
+    <footer class="footer">
+    </footer>
+
+    <!-- Cargar como módulo ES6 -->
+    <script type="module" src="/.js/principal.js"></script>
+
+</body>
+</html>

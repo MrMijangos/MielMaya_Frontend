@@ -1,0 +1,141 @@
+export function getUserSidebarHTML() {
+    return `
+        <div class="user-sidebar" id="userSidebar">
+            <div class="user-sidebar-header">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <img src="/images/perfil.png" alt="Usuario">
+                    </div>
+                    <h3 class="user-name" id="userName">JOSE PABLITO</h3>
+                </div>
+                <button class="user-close-btn" id="closeUserBtn">✕</button>
+            </div>
+
+            <nav class="user-menu">
+                <button class="user-menu-item active" data-section="orders">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                    <span>VER PEDIDOS</span>
+                </button>
+
+                <button class="user-menu-item" data-section="payment">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    <span>MÉTODOS DE PAGO</span>
+                </button>
+
+                <button class="user-menu-item" data-section="addresses">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span>DIRECCIONES DE ENVÍO</span>
+                </button>
+
+                <button class="user-menu-item logout-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>CERRAR SESIÓN</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="user-overlay" id="userOverlay"></div>
+    `;
+}
+
+export function injectUserSidebar() {
+    const sidebarHTML = getUserSidebarHTML();
+    document.body.insertAdjacentHTML('beforeend', sidebarHTML);
+}
+
+export class UserSidebar {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.userButton = document.querySelector('.user-btn');
+        this.userSidebar = document.getElementById('userSidebar');
+        this.userOverlay = document.getElementById('userOverlay');
+        this.closeUserBtn = document.getElementById('closeUserBtn');
+        this.menuItems = document.querySelectorAll('.user-menu-item');
+        
+        this.userButton?.addEventListener('click', () => this.openSidebar());
+        this.closeUserBtn?.addEventListener('click', () => this.closeSidebar());
+        this.userOverlay?.addEventListener('click', () => this.closeSidebar());
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.userSidebar?.classList.contains('active')) {
+                this.closeSidebar();
+            }
+        });
+        
+        this.menuItems.forEach(item => {
+            item.addEventListener('click', (e) => this.handleMenuClick(e));
+        });
+    }
+
+    openSidebar() {
+        this.userSidebar?.classList.add('active');
+        this.userOverlay?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeSidebar() {
+        this.userSidebar?.classList.remove('active');
+        this.userOverlay?.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    handleMenuClick(e) {
+        const section = e.currentTarget.dataset.section;
+        
+        this.menuItems.forEach(item => item.classList.remove('active'));
+        
+        e.currentTarget.classList.add('active');
+        
+        this.closeSidebar();
+        
+        switch(section) {
+            case 'orders':
+                window.location.href = '/.html/orders.html';
+                break;
+            case 'payment':
+                window.location.href = '/.html/mycards.html';
+                break;
+            case 'addresses':
+                window.location.href = '/.html/addresses.html';
+                break;
+            default:
+                break;
+        }
+        
+        if (e.currentTarget.classList.contains('logout-btn')) {
+            this.logout();
+        }
+    }
+
+    logout() {
+        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+            localStorage.removeItem('userData');
+            localStorage.removeItem('selectedPaymentMethod');
+            localStorage.removeItem('selectedShippingAddress');
+            
+            alert('Sesión cerrada exitosamente');
+            window.location.href = '/.html/login.html';
+        }
+    }
+}
+
+export function initUserSidebar() {
+    injectUserSidebar();
+    return new UserSidebar();
+}
