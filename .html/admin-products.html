@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/.css/admin-products.css">
+    <title>Administrar Productos - Miel de la Selva Maya</title>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                    <img src="/images/LOGO.png" alt="Logo Miel de la Selva Maya">
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar productos...">
+                <button type="button" class="search-btn">
+                    <img src="/images/buscar.png" alt="">
+                </button>
+            </div>
+            
+            <div class="header-actions">
+                <span class="admin-label">Botón para ver los pedidos</span>
+                <div class="header-icons">
+                    <button class="icon-btn orders-btn" onclick="window.location.href='/admin-shipments.html'">
+                        <img src="/images/carrito-de-compras.png" alt="Ver pedidos">
+                    </button>
+                    <button class="icon-btn user-btn">
+                        <img src="/images/perfil.png" alt="Usuario">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="features-container">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="/images/abeja-reina" alt="">
+                </div>
+                <h3 class="feature-title">Calidad</h3>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="/images/miel" alt="">
+                </div>
+                <h3 class="feature-title">Tradición</h3>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="/images/abejareina" alt="">
+                </div>
+                <h3 class="feature-title">Compromiso</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Products Section -->
+    <section class="admin-products-section">
+        <div class="admin-products-container">
+            <!-- Header -->
+            <div class="section-header">
+                <h2 class="section-title">TODOS NUESTROS PRODUCTOS</h2>
+                <p class="section-subtitle">Los mejores de nuestros productos<br>según nuestros clientes</p>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid">
+                <!-- Producto 1 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="/images/productosmiel" alt="Miel Pura">
+                    </div>
+                    <h3 class="product-name">MIEL PURA</h3>
+                    <p class="product-price">$120</p>
+                    <button class="btn-edit-product" data-id="1">EDITAR</button>
+                </div>
+
+                <!-- Producto 2 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="/images/productosmiel" alt="Miel Pura">
+                    </div>
+                    <h3 class="product-name">MIEL PURA</h3>
+                    <p class="product-price">$120</p>
+                    <button class="btn-edit-product" data-id="2">EDITAR</button>
+                </div>
+
+                <!-- Producto 3 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="/images/productosmiel" alt="Miel Pura">
+                    </div>
+                    <h3 class="product-name">MIEL PURA</h3>
+                    <p class="product-price">$120</p>
+                    <button class="btn-edit-product" data-id="3">EDITAR</button>
+                </div>
+
+                <!-- Producto 4 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="/images/productosmiel" alt="Miel Pura">
+                    </div>
+                    <h3 class="product-name">MIEL PURA</h3>
+                    <p class="product-price">$120</p>
+                    <button class="btn-edit-product" data-id="4">EDITAR</button>
+                </div>
+
+                <!-- Producto 5 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="/images/productosmiel" alt="Miel Pura">
+                    </div>
+                    <h3 class="product-name">MIEL PURA</h3>
+                    <p class="product-price">$120</p>
+                    <button class="btn-edit-product" data-id="5">EDITAR</button>
+                </div>
+
+                <!-- Producto 6 -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="/images/productosmiel" alt="Miel Pura">
+                    </div>
+                    <h3 class="product-name">MIEL PURA</h3>
+                    <p class="product-price">$120</p>
+                    <button class="btn-edit-product" data-id="6">EDITAR</button>
+                </div>
+            </div>
+
+            <!-- Botón Añadir Productos -->
+            <div class="add-product-container">
+                <button class="btn-add-products" id="btnAddProducts">AÑADIR PRODUCTOS</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="reviews-section">
+        <h2 class="section-title">CLIENTES FELICES</h2>
+        
+        <div class="reviews-grid">
+            <!-- Review 1 -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="/images/perfil.png" alt="Jose Pablito">
+                    </div>
+                    <div class="review-info">
+                        <h4 class="review-name">JOSE PABLITO</h4>
+                        <p class="review-text">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                    </div>
+                </div>
+                <div class="review-footer">
+                    <span class="review-label">muy satisfecho</span>
+                </div>
+            </div>
+
+            <!-- Review 2 -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="/images/perfil.png" alt="Jose Pablito">
+                    </div>
+                    <div class="review-info">
+                        <h4 class="review-name">JOSE PABLITO</h4>
+                        <p class="review-text">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review 3 -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="/images/perfil.png" alt="Jose Pablito">
+                    </div>
+                    <div class="review-info">
+                        <h4 class="review-name">JOSE PABLITO</h4>
+                        <p class="review-text">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review 4 -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="/images/perfil.png" alt="Jose Pablito">
+                    </div>
+                    <div class="review-info">
+                        <h4 class="review-name">JOSE PABLITO</h4>
+                        <p class="review-text">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón Ver Todas las Reseñas -->
+        <div class="view-all-reviews-container">
+            <button class="btn-view-reviews">VER TODAS LAS RESEÑAS</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="/images/LOGO.png" alt="Logo">
+            </div>
+            <p class="footer-text">&copy; 2024 Miel de la Selva Maya. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

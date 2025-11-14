@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/.css/admin.css">
+    <title>Administrador de Envíos - Miel de la Selva Maya</title>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="/index.html">
+                    <img src="/images/LOGO.png" alt="Logo Miel de la Selva Maya">
+                </a>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar productos...">
+                <button type="button" class="search-btn">
+                    <img src="/images/buscar.png" alt="">
+                </button>
+            </div>
+            
+            <div class="header-icons">
+                <button class="icon-btn cart-btn">
+                    <img src="/images/carrito-de-compras.png" alt="">
+                </button>
+                <button class="icon-btn user-btn">
+                    <img src="/images/perfil.png" alt="">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="features-container">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="/images/abeja-reina" alt="">
+                </div>
+                <h3 class="feature-title">Calidad</h3>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="/images/miel" alt="">
+                </div>
+                <h3 class="feature-title">Tradición</h3>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <img src="/images/abejareina" alt="">
+                </div>
+                <h3 class="feature-title">Compromiso</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Shipments Section -->
+    <section class="admin-section">
+        <div class="admin-container">
+            <!-- Header con botón de regresar -->
+            <div class="admin-header">
+                <button class="btn-back" onclick="window.location.href='/index.html'">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1>SECCIÓN DE ENVÍOS</h1>
+            </div>
+
+            <!-- Tabs de filtros -->
+            <div class="shipment-tabs">
+                <button class="tab-btn active" data-status="pending">PENDIENTES DE ENVÍO</button>
+                <button class="tab-btn" data-status="shipped">ENVIADOS</button>
+                <button class="tab-btn" data-status="delivered">ENTREGADOS</button>
+            </div>
+
+            <!-- Lista de envíos pendientes -->
+            <div class="shipments-list" id="shipmentsList">
+                <!-- Envío 1 -->
+                <div class="shipment-item" data-status="pending">
+                    <div class="shipment-main">
+                        <div class="shipment-product">
+                            <img src="/images/productosmiel" alt="Miel en Panal" class="shipment-image">
+                            <div class="product-details">
+                                <h3 class="product-name">MIEL EN PANAL</h3>
+                                <p class="product-description">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                                <div class="product-quantity">Cant: <strong>1</strong></div>
+                            </div>
+                        </div>
+                        
+                        <div class="shipment-info">
+                            <h4 class="customer-name">JOSE PABLITO</h4>
+                            <p class="shipping-address">Carretera Villaflores s/n<br>25295<br>colonia 5 de Mayo<br>suchíapa<br>chiapas<br>960 164 8930</p>
+                        </div>
+                    </div>
+                    
+                    <div class="shipment-actions">
+                        <button class="btn-update" onclick="updateShipment(this, 'shipped')">ACTUALIZAR</button>
+                    </div>
+                </div>
+
+                <!-- Envío 2 -->
+                <div class="shipment-item" data-status="pending">
+                    <div class="shipment-main">
+                        <div class="shipment-product">
+                            <img src="/images/productosmiel" alt="Miel en Panal" class="shipment-image">
+                            <div class="product-details">
+                                <h3 class="product-name">MIEL EN PANAL</h3>
+                                <p class="product-description">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                                <div class="product-quantity">Cant: <strong>1</strong></div>
+                            </div>
+                        </div>
+                        
+                        <div class="shipment-info">
+                            <h4 class="customer-name">JOSE PABLITO</h4>
+                            <p class="shipping-address">Carretera Villaflores s/n<br>25295<br>colonia 5 de Mayo<br>suchíapa<br>chiapas<br>960 164 8930</p>
+                        </div>
+                    </div>
+                    
+                    <div class="shipment-actions">
+                        <button class="btn-update" onclick="updateShipment(this, 'shipped')">ACTUALIZAR</button>
+                    </div>
+                </div>
+
+                <!-- Envío 3 -->
+                <div class="shipment-item" data-status="pending">
+                    <div class="shipment-main">
+                        <div class="shipment-product">
+                            <img src="/images/productosmiel" alt="Miel en Panal" class="shipment-image">
+                            <div class="product-details">
+                                <h3 class="product-name">MIEL EN PANAL</h3>
+                                <p class="product-description">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                                <div class="product-quantity">Cant: <strong>1</strong></div>
+                            </div>
+                        </div>
+                        
+                        <div class="shipment-info">
+                            <h4 class="customer-name">JOSE PABLITO</h4>
+                            <p class="shipping-address">Carretera Villaflores s/n<br>25295<br>colonia 5 de Mayo<br>suchíapa<br>chiapas<br>960 164 8930</p>
+                        </div>
+                    </div>
+                    
+                    <div class="shipment-actions">
+                        <button class="btn-update" onclick="updateShipment(this, 'shipped')">ACTUALIZAR</button>
+                    </div>
+                </div>
+
+                <!-- Envío 4 -->
+                <div class="shipment-item" data-status="pending">
+                    <div class="shipment-main">
+                        <div class="shipment-product">
+                            <img src="/images/productosmiel" alt="Miel en Panal" class="shipment-image">
+                            <div class="product-details">
+                                <h3 class="product-name">MIEL EN PANAL</h3>
+                                <p class="product-description">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                                <div class="product-quantity">Cant: <strong>1</strong></div>
+                            </div>
+                        </div>
+                        
+                        <div class="shipment-info">
+                            <h4 class="customer-name">JOSE PABLITO</h4>
+                            <p class="shipping-address">Carretera Villaflores s/n<br>25295<br>colonia 5 de Mayo<br>suchíapa<br>chiapas<br>960 164 8930</p>
+                        </div>
+                    </div>
+                    
+                    <div class="shipment-actions">
+                        <button class="btn-update" onclick="updateShipment(this, 'shipped')">ACTUALIZAR</button>
+                    </div>
+                </div>
+
+                <!-- Envíos con otros estados (ocultos por defecto) -->
+                <div class="shipment-item" data-status="shipped" style="display: none;">
+                    <div class="shipment-main">
+                        <div class="shipment-product">
+                            <img src="/images/productosmiel" alt="Miel en Panal" class="shipment-image">
+                            <div class="product-details">
+                                <h3 class="product-name">MIEL EN PANAL</h3>
+                                <p class="product-description">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                                <div class="product-quantity">Cant: <strong>1</strong></div>
+                            </div>
+                        </div>
+                        
+                        <div class="shipment-info">
+                            <h4 class="customer-name">JOSE PABLITO</h4>
+                            <p class="shipping-address">Carretera Villaflores s/n<br>25295<br>colonia 5 de Mayo<br>suchíapa<br>chiapas<br>960 164 8930</p>
+                        </div>
+                    </div>
+                    
+                    <div class="shipment-actions">
+                        <button class="btn-update" onclick="updateShipment(this, 'delivered')">ACTUALIZAR</button>
+                    </div>
+                </div>
+
+                <div class="shipment-item" data-status="delivered" style="display: none;">
+                    <div class="shipment-main">
+                        <div class="shipment-product">
+                            <img src="/images/productosmiel" alt="Miel en Panal" class="shipment-image">
+                            <div class="product-details">
+                                <h3 class="product-name">MIEL EN PANAL</h3>
+                                <p class="product-description">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                                <div class="product-quantity">Cant: <strong>1</strong></div>
+                            </div>
+                        </div>
+                        
+                        <div class="shipment-info">
+                            <h4 class="customer-name">JOSE PABLITO</h4>
+                            <p class="shipping-address">Carretera Villaflores s/n<br>25295<br>colonia 5 de Mayo<br>suchíapa<br>chiapas<br>960 164 8930</p>
+                        </div>
+                    </div>
+                    
+                    <div class="shipment-actions">
+                        <span class="status-badge delivered">ENTREGADO</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Cancelados -->
+            <div class="cancelled-section">
+                <h2 class="section-title">SECCIÓN DE CANCELADOS</h2>
+                
+                <div class="cancelled-list">
+                    <div class="cancelled-item">
+                        <div class="cancelled-product">
+                            <img src="/images/productosmiel" alt="Miel en Panal" class="cancelled-image">
+                            <div class="product-details">
+                                <h3 class="product-name">MIEL EN PANAL</h3>
+                                <p class="product-description">Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</p>
+                                <div class="product-quantity">Cant: <strong>1</strong></div>
+                            </div>
+                        </div>
+                        
+                        <div class="cancelled-info">
+                            <h4 class="customer-name">JOSE PABLITO</h4>
+                            <p class="shipping-address">Carretera Villaflores s/n<br>25295<br>colonia 5 de Mayo<br>suchíapa<br>chiapas<br>960 164 8930</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="/images/LOGO.png" alt="Logo">
+            </div>
+            <p class="footer-text">&copy; 2024 Miel de la Selva Maya. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="/admin-shipments.js"></script>
+</body>
+</html>
