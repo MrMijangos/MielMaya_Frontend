@@ -71,7 +71,6 @@ body {
     border-radius: 10px;
     font-size: 13px;
     font-weight: 500;
-    text-transform: uppercase;
     transition: all 0.3s ease;
     background-color: #fafafa;
 }

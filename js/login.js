@@ -1,5 +1,5 @@
 // .js/login.js
-import authService from '../common/api/auth-service.js';
+import authService from '../services/auth-service.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password');
@@ -26,18 +26,28 @@ document.addEventListener('DOMContentLoaded', function() {
         btnEntrar.disabled = true;
 
         try {
-            const result = await authService.login(correo, password);
+            const result = await authService.login({
+                correo:correo,
+                contrasenia:password
+        });
 
-            if (result.success) {
-                // Login exitoso
-                showNotification('¡Bienvenido!', 'success');
-                
-                // Redirigir después de 1 segundo
-                setTimeout(() => {
-                    window.location.href = '/index.html';
-                }, 1000);
-            } else {
-                // Error en login
+           
+if (result.success) {
+    showNotification('¡Bienvenido!', 'success');
+    
+    // Redirigir según el rol
+    setTimeout(() => {
+        const usuario = authService.getCurrentUser();
+        const rol = usuario.rol; // "ADMIN" o "USER"
+        
+        if (rol === "ADMIN") {
+            window.location.href = '/html/admin-products.html';  // Vista admin
+        } else {
+            window.location.href = '/index.html';  // Vista cliente
+        }
+    }, 1000);
+} else {
+                // Error en loginhtml
                 showNotification(result.error || 'Credenciales incorrectas', 'error');
                 btnEntrar.textContent = originalText;
                 btnEntrar.disabled = false;

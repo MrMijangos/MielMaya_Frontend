@@ -1,13 +1,100 @@
-// .js/admin-products.js
-import productService from '../common/api/product-service.js';
-import authService from '../common/api/auth-service.js';
-
+// .js/admin-products.js - VERSIÓN CORREGIDA SIN MÓDULOS
 let currentProductId = null;
+const API_BASE_URL = 'http://localhost:7000/api';
+
+// Servicios simplificados
+const productService = {
+    async getAllProducts() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/products`);
+            const data = await response.json();
+            return { success: response.ok, data };
+        } catch (error) {
+            console.error('Error cargando productos:', error);
+            return { success: false, error: 'Error de conexión' };
+        }
+    },
+    
+    async getProductById(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/products/${id}`);
+            const data = await response.json();
+            return { success: response.ok, data };
+        } catch (error) {
+            console.error('Error cargando producto:', error);
+            return { success: false, error: 'Error de conexión' };
+        }
+    },
+    
+    async createProduct(productData) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/products`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productData)
+            });
+            const data = await response.json();
+            return { success: response.ok, data };
+        } catch (error) {
+            console.error('Error creando producto:', error);
+            return { success: false, error: 'Error de conexión' };
+        }
+    },
+    
+    async updateProduct(id, productData) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productData)
+            });
+            const data = await response.json();
+            return { success: response.ok, data };
+        } catch (error) {
+            console.error('Error actualizando producto:', error);
+            return { success: false, error: 'Error de conexión' };
+        }
+    },
+    
+    async deleteProduct(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            return { success: response.ok, data };
+        } catch (error) {
+            console.error('Error eliminando producto:', error);
+            return { success: false, error: 'Error de conexión' };
+        }
+    }
+};
+
+const authService = {
+    isAuthenticated() {
+        const userData = localStorage.getItem('usuario');
+        if (!userData) return false;
+        
+        try {
+            const user = JSON.parse(userData);
+            return user.rol === 'ADMIN';
+        } catch {
+            return false;
+        }
+    },
+    
+    getCurrentUser() {
+        const userData = localStorage.getItem('usuario');
+        return userData ? JSON.parse(userData) : null;
+    }
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('✅ admin-products.js cargado');
+    
     // Verificar autenticación de admin
     if (!authService.isAuthenticated()) {
-        alert('Debes iniciar sesión');
+        alert('Debes iniciar sesión como administrador');
         window.location.href = '/html/login.html';
         return;
     }
@@ -19,8 +106,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnAdd = document.getElementById('btnAddProducts');
     if (btnAdd) {
         btnAdd.addEventListener('click', openAddModal);
+        console.log('✅ Event listener agregado a btnAddProducts');
+    } else {
+        console.log('❌ No se encontró btnAddProducts');
     }
     
+    // Event listeners para imágenes
+    setupEventListeners();
+});
+
+function setupEventListeners() {
     // Click en el área de imagen para subir archivo (AGREGAR)
     const addImagePreview = document.getElementById('addImagePreview');
     if (addImagePreview) {
@@ -75,27 +170,80 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('editStockCount').textContent = e.target.value || '0';
         });
     }
-    
-    // Cerrar modales
-    document.getElementById('addProductModal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'addProductModal') {
-            closeAddModal();
+}
+
+// ========== FUNCIONES GLOBALES (para onclick del HTML) ==========
+window.openAddModal = function() {
+    console.log('🔄 Abriendo modal agregar');
+    const modal = document.getElementById('addProductModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+window.closeAddModal = function() {
+    console.log('🔄 Cerrando modal agregar');
+    const modal = document.getElementById('addProductModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        
+        // Limpiar formulario
+        const form = document.getElementById('addProductForm');
+        if (form) form.reset();
+        document.getElementById('stockCount').textContent = '0';
+        
+        // Resetear preview de imagen
+        const preview = document.getElementById('addImagePreview');
+        if (preview) {
+            preview.innerHTML = `
+                <svg width="120" height="120" viewBox="0 0 100 100" fill="none">
+                    <rect x="10" y="15" width="70" height="60" rx="5" stroke="#F9BD31" stroke-width="4"/>
+                    <circle cx="30" cy="32" r="6" fill="#F9BD31"/>
+                    <path d="M10 60 L35 40 L55 55 L70 45 L80 52" stroke="#F9BD31" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M65 55 L75 45 L85 52 L85 68" stroke="#F9BD31" stroke-width="4" stroke-linecap="round"/>
+                    <g transform="translate(55, 50)">
+                        <circle cx="15" cy="15" r="15" fill="#F9BD31"/>
+                        <path d="M15 8 L15 22 M8 15 L22 15" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                    </g>
+                </svg>
+            `;
+            preview.classList.remove('has-image');
         }
-    });
-    
-    document.getElementById('editProductModal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'editProductModal') {
+    }
+}
+
+window.closeEditModal = function() {
+    console.log('🔴 Cerrando modal editar');
+    const modal = document.getElementById('editProductModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        currentProductId = null;
+    }
+}
+
+window.deleteProduct = async function() {
+    if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+        return;
+    }
+
+    try {
+        const result = await productService.deleteProduct(currentProductId);
+        if (result.success) {
+            showNotification('Producto eliminado exitosamente', 'success');
             closeEditModal();
+            await loadProducts();
+        } else {
+            showNotification(result.error || 'Error al eliminar producto', 'error');
         }
-    });
-    
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeAddModal();
-            closeEditModal();
-        }
-    });
-});
+    } catch (error) {
+        showNotification('Error de conexión', 'error');
+    }
+}
+
+// ========== FUNCIONES PRINCIPALES ==========
 
 // Cargar productos desde backend
 async function loadProducts() {
@@ -105,15 +253,15 @@ async function loadProducts() {
     try {
         const result = await productService.getAllProducts();
 
-        if (result.success && result.data.length > 0) {
+        if (result.success && result.data && result.data.length > 0) {
             productsGrid.innerHTML = result.data.map(product => `
                 <div class="product-card">
                     <div class="product-image">
-                        <img src="${product.imagen_base64 || '/images/productosmiel'}" alt="${product.nombre}">
+                        <img src="${product.imagen || product.imagen_base64 || '/images/productosmiel'}" alt="${product.nombre}">
                     </div>
                     <h3 class="product-name">${product.nombre}</h3>
-                    <p class="product-price">$${product.precio.toFixed(2)}</p>
-                    <button class="btn-edit-product" data-id="${product.id_producto}">EDITAR</button>
+                    <p class="product-price">$${product.precio ? product.precio.toFixed(2) : '0.00'}</p>
+                    <button class="btn-edit-product" data-id="${product.id || product.ID_Producto || product.id_producto}">EDITAR</button>
                 </div>
             `).join('');
 
@@ -124,45 +272,13 @@ async function loadProducts() {
                     openEditModal(currentProductId);
                 });
             });
+        } else {
+            productsGrid.innerHTML = '<p>No hay productos disponibles</p>';
         }
     } catch (error) {
         console.error('Error loading products:', error);
         showNotification('Error al cargar productos', 'error');
     }
-}
-
-// Abrir modal de agregar
-function openAddModal() {
-    const modal = document.getElementById('addProductModal');
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-// Cerrar modal de agregar
-function closeAddModal() {
-    const modal = document.getElementById('addProductModal');
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-    
-    // Limpiar formulario
-    document.getElementById('addProductForm').reset();
-    document.getElementById('stockCount').textContent = '0';
-    
-    // Resetear preview de imagen
-    const preview = document.getElementById('addImagePreview');
-    preview.innerHTML = `
-        <svg width="120" height="120" viewBox="0 0 100 100" fill="none">
-            <rect x="10" y="15" width="70" height="60" rx="5" stroke="#F9BD31" stroke-width="4"/>
-            <circle cx="30" cy="32" r="6" fill="#F9BD31"/>
-            <path d="M10 60 L35 40 L55 55 L70 45 L80 52" stroke="#F9BD31" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M65 55 L75 45 L85 52 L85 68" stroke="#F9BD31" stroke-width="4" stroke-linecap="round"/>
-            <g transform="translate(55, 50)">
-                <circle cx="15" cy="15" r="15" fill="#F9BD31"/>
-                <path d="M15 8 L15 22 M8 15 L22 15" stroke="white" stroke-width="3" stroke-linecap="round"/>
-            </g>
-        </svg>
-    `;
-    preview.classList.remove('has-image');
 }
 
 // Preview de imagen al agregar
@@ -179,6 +295,58 @@ function previewImageAdd(event) {
         };
         
         reader.readAsDataURL(file);
+    }
+}
+
+// Preview de imagen al editar
+function previewImageEdit(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('editImagePreview');
+    
+    if (file) {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+            preview.classList.add('has-image');
+        };
+        
+        reader.readAsDataURL(file);
+    }
+}
+
+// Abrir modal de editar
+async function openEditModal(productId) {
+    const modal = document.getElementById('editProductModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    try {
+        const result = await productService.getProductById(productId);
+        
+        if (result.success && result.data) {
+            const product = result.data;
+            
+            // Llenar formulario con datos del producto
+            document.getElementById('editProductName').value = product.nombre || '';
+            document.getElementById('editProductPrice').value = product.precio || '';
+            document.getElementById('editProductQuantity').value = product.cantidad || product.stock || '';
+            document.getElementById('editProductDescription').value = product.descripcion || '';
+            document.getElementById('editStockCount').textContent = product.cantidad || product.stock || '0';
+            
+            // Mostrar imagen actual
+            const preview = document.getElementById('editImagePreview');
+            if (preview) {
+                preview.innerHTML = `<img src="${product.imagen || product.imagen_base64 || '/images/productosmiel'}" alt="${product.nombre}">`;
+                preview.classList.add('has-image');
+            }
+        }
+    } catch (error) {
+        console.error('Error al cargar producto:', error);
+        showNotification('Error al cargar producto', 'error');
+        closeEditModal();
     }
 }
 
@@ -224,63 +392,6 @@ async function handleAddProduct(e) {
     reader.readAsDataURL(file);
 }
 
-// Continuación de admin-products.js
-
-// Abrir modal de editar
-async function openEditModal(productId) {
-    const modal = document.getElementById('editProductModal');
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    try {
-        const result = await productService.getProductById(productId);
-        
-        if (result.success) {
-            const product = result.data;
-            
-            // Llenar formulario con datos del producto
-            document.getElementById('editProductName').value = product.nombre;
-            document.getElementById('editProductPrice').value = product.precio;
-            document.getElementById('editProductQuantity').value = product.cantidad;
-            document.getElementById('editProductDescription').value = product.descripcion;
-            document.getElementById('editStockCount').textContent = product.cantidad;
-            
-            // Mostrar imagen actual
-            const preview = document.getElementById('editImagePreview');
-            preview.innerHTML = `<img src="${product.imagen_base64 || '/images/productosmiel'}" alt="${product.nombre}">`;
-            preview.classList.add('has-image');
-        }
-    } catch (error) {
-        showNotification('Error al cargar producto', 'error');
-        closeEditModal();
-    }
-}
-
-// Cerrar modal de editar
-function closeEditModal() {
-    const modal = document.getElementById('editProductModal');
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-    currentProductId = null;
-}
-
-// Preview de imagen al editar
-function previewImageEdit(event) {
-    const file = event.target.files[0];
-    const preview = document.getElementById('editImagePreview');
-    
-    if (file) {
-        const reader = new FileReader();
-        
-        reader.onload = (e) => {
-            preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-            preview.classList.add('has-image');
-        };
-        
-        reader.readAsDataURL(file);
-    }
-}
-
 // Manejar envío de formulario editar
 async function handleEditProduct(e) {
     e.preventDefault();
@@ -323,30 +434,6 @@ async function updateProduct(productData) {
         showNotification('Error de conexión', 'error');
     }
 }
-
-// Eliminar producto
-async function deleteProduct() {
-    if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-        return;
-    }
-
-    try {
-        const result = await productService.deleteProduct(currentProductId);
-
-        if (result.success) {
-            showNotification('Producto eliminado exitosamente', 'error');
-            closeEditModal();
-            await loadProducts();
-        } else {
-            showNotification(result.error || 'Error al eliminar producto', 'error');
-        }
-    } catch (error) {
-        showNotification('Error de conexión', 'error');
-    }
-}
-
-// Hacer deleteProduct global para que funcione desde el HTML
-window.deleteProduct = deleteProduct;
 
 // Mostrar notificación
 function showNotification(message, type = 'success') {

@@ -716,8 +716,7 @@ body {
         height: 100px;
     }
 }
-/* ========== MODAL AGREGAR PRODUCTO (DISEÑO ESPECÍFICO) ========== */
-
+/* ========== MODALES ========== */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -730,13 +729,10 @@ body {
     justify-content: center;
     z-index: 2000;
     padding: 20px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
 .modal-overlay.active {
     display: flex;
-    opacity: 1;
 }
 
 .modal-container-add {
@@ -766,29 +762,9 @@ body {
     }
 }
 
-/* Scrollbar del modal */
-.modal-container-add::-webkit-scrollbar {
-    width: 8px;
-}
-
-.modal-container-add::-webkit-scrollbar-track {
-    background: #f0f0f0;
-    border-radius: 10px;
-}
-
-.modal-container-add::-webkit-scrollbar-thumb {
-    background: #F9BD31;
-    border-radius: 10px;
-}
-
 .modal-header-add {
     display: flex;
     justify-content: flex-start;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 10;
-    padding-bottom: 10px;
 }
 
 .btn-back-modal {
@@ -802,7 +778,6 @@ body {
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s;
-    flex-shrink: 0;
 }
 
 .btn-back-modal:hover {
@@ -820,7 +795,7 @@ body {
     transition: stroke 0.3s;
 }
 
-/* Área de carga de imagen grande */
+
 .image-upload-area {
     display: flex;
     justify-content: center;

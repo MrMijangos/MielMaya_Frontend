@@ -68,7 +68,6 @@ body {
     border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 14px;
-    text-transform: uppercase;
     transition: border-color 0.3s;
 }
 
@@ -79,7 +78,6 @@ body {
 
 .input-group input::placeholder {
     color: #999;
-    text-transform: uppercase;
     font-size: 12px;
 }
 

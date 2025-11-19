@@ -12,7 +12,7 @@ class AuthService {
                 body: JSON.stringify({
                     nombre: userData.nombre,
                     correo: userData.correo,
-                    contrasenia: userData.contraseña,
+                    contrasenia: userData.contrasenia,
                     celular: userData.celular || '' // Campo opcional
                 })
             });
@@ -48,7 +48,7 @@ class AuthService {
                 },
                 body: JSON.stringify({
                     correo: credentials.correo,
-                    contrasenia: credentials.contraseña
+                    contrasenia: credentials.contrasenia
                 })
             });
 
@@ -58,7 +58,8 @@ class AuthService {
                 localStorage.setItem('usuario', JSON.stringify(data));
                 return {
                     success: true,
-                    data: data
+                    data: data,
+                    rol: data.rol
                 };
             } else {
                 return {

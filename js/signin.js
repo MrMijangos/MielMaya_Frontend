@@ -1,5 +1,5 @@
 // js/signin.js
-import authService from '../common/api/auth-service.js';
+import authService from '../services/auth-service.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.querySelector('.register-form');
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await authService.register({
                 nombre,
                 correo,
-                contraseña: password,
+                contrasenia: password,
                 celular
             });
 
