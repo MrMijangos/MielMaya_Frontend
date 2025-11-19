@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const productName = orderItem.querySelector('.order-product-name').textContent;
             alert(`Agregando "${productName}" al carrito...`);
             // Aquí agregarías el producto al carrito
-            window.location.href = '/.html/principal.html';
+            window.location.href = '/index.html';
         });
     });
     

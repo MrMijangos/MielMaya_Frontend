@@ -5,26 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cargar total del carrito
     loadCartTotal();
     
-    // Event listener para agregar dirección
-    document.getElementById('btnAddAddress')?.addEventListener('click', () => {
-        // Guardar método de pago seleccionado antes de navegar
-        const paymentMethod = localStorage.getItem('selectedPaymentMethod');
-        if (paymentMethod) {
-            window.location.href = '/.html/add-shipping.html';
-        }
-    });
-    
-    // Event listener para proceder al método de pago
-    document.getElementById('btnProceedToPayment')?.addEventListener('click', () => {
-        const selectedAddress = document.querySelector('input[name="shipping-address"]:checked');
-        
-        if (selectedAddress) {document.addEventListener('DOMContentLoaded', () => {
-    // Verificar que haya un método de pago seleccionado
-    checkPaymentMethod();
-    
-    // Cargar total del carrito
-    loadCartTotal();
-    
     // Formateo de campos
     setupAddressFormatting();
     
@@ -46,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Aquí guardarías la dirección en tu base de datos
             alert('Dirección agregada exitosamente');
-            window.location.href = '/shipping-address.html';
+            window.location.href = '/html/shipping-address.html';
         } else {
             alert('Por favor completa todos los campos');
             form.reportValidity();
@@ -59,7 +39,7 @@ function checkPaymentMethod() {
     
     if (!paymentMethod) {
         alert('Debes seleccionar un método de pago primero');
-        window.location.href = '/checkout.html';
+        window.location.href = '/html/checkout.html';
         return false;
     }
     return true;
@@ -110,41 +90,4 @@ function setupAddressFormatting() {
             municipalitySelect.appendChild(option);
         });
     });
-}
-            // Guardar dirección seleccionada
-            localStorage.setItem('selectedShippingAddress', selectedAddress.value);
-            // Redirigir a confirmación final o procesar compra
-            alert('Procesando compra...');
-            // window.location.href = '/order-confirmation.html';
-        } else {
-            alert('Por favor selecciona una dirección de envío');
-        }
-    });
-});
-
-function checkPaymentMethod() {
-    const paymentMethod = localStorage.getItem('selectedPaymentMethod');
-    
-    if (!paymentMethod) {
-        alert('Debes seleccionar un método de pago primero');
-        window.location.href = '/.html/checkout.html';
-        return false;
-    }
-    return true;
-}
-
-function loadCartTotal() {
-    const savedCart = localStorage.getItem('mielCart');
-    if (savedCart) {
-        try {
-            const items = JSON.parse(savedCart);
-            const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const totalElement = document.getElementById('shippingTotal');
-            if (totalElement) {
-                totalElement.textContent = `$${total.toFixed(2)}`;
-            }
-        } catch (error) {
-            console.error('Error loading cart:', error);
-        }
-    }
 }

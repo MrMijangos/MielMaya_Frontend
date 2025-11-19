@@ -1,9 +1,19 @@
-// Variables globales
+// .js/admin-products.js
+import productService from '../common/api/product-service.js';
+import authService from '../common/api/auth-service.js';
+
 let currentProductId = null;
 
-// Event Listeners cuando el DOM está listo
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Cargado');
+document.addEventListener('DOMContentLoaded', async () => {
+    // Verificar autenticación de admin
+    if (!authService.isAuthenticated()) {
+        alert('Debes iniciar sesión');
+        window.location.href = '/html/login.html';
+        return;
+    }
+
+    // Cargar productos
+    await loadProducts();
     
     // Botón Añadir Productos
     const btnAdd = document.getElementById('btnAddProducts');
@@ -26,15 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('editProductImage').click();
         });
     }
-    
-    // Botones Editar de cada producto
-    document.querySelectorAll('.btn-edit-product').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            currentProductId = e.target.dataset.id;
-            console.log('Editando producto ID:', currentProductId);
-            openEditModal(currentProductId);
-        });
-    });
     
     // Formulario de agregar producto
     const addForm = document.getElementById('addProductForm');
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         editProductImage.addEventListener('change', previewImageEdit);
     }
     
-    // Actualizar contador de stock al agregar
+    // Actualizar contador de stock
     const addQuantity = document.getElementById('addProductQuantity');
     if (addQuantity) {
         addQuantity.addEventListener('input', (e) => {
@@ -68,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Actualizar contador de stock al editar
     const editQuantity = document.getElementById('editProductQuantity');
     if (editQuantity) {
         editQuantity.addEventListener('input', (e) => {
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Cerrar modales al hacer clic fuera
+    // Cerrar modales
     document.getElementById('addProductModal')?.addEventListener('click', (e) => {
         if (e.target.id === 'addProductModal') {
             closeAddModal();
@@ -89,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Cerrar modales con tecla ESC
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeAddModal();
@@ -98,15 +97,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ========== FUNCIONES DE MODAL AGREGAR ==========
+// Cargar productos desde backend
+async function loadProducts() {
+    const productsGrid = document.querySelector('.products-grid');
+    if (!productsGrid) return;
 
+    try {
+        const result = await productService.getAllProducts();
+
+        if (result.success && result.data.length > 0) {
+            productsGrid.innerHTML = result.data.map(product => `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${product.imagen_base64 || '/images/productosmiel'}" alt="${product.nombre}">
+                    </div>
+                    <h3 class="product-name">${product.nombre}</h3>
+                    <p class="product-price">$${product.precio.toFixed(2)}</p>
+                    <button class="btn-edit-product" data-id="${product.id_producto}">EDITAR</button>
+                </div>
+            `).join('');
+
+            // Agregar event listeners a botones de editar
+            document.querySelectorAll('.btn-edit-product').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    currentProductId = e.target.dataset.id;
+                    openEditModal(currentProductId);
+                });
+            });
+        }
+    } catch (error) {
+        console.error('Error loading products:', error);
+        showNotification('Error al cargar productos', 'error');
+    }
+}
+
+// Abrir modal de agregar
 function openAddModal() {
     const modal = document.getElementById('addProductModal');
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
-    console.log('Modal agregar abierto');
 }
 
+// Cerrar modal de agregar
 function closeAddModal() {
     const modal = document.getElementById('addProductModal');
     modal.classList.remove('active');
@@ -133,6 +165,7 @@ function closeAddModal() {
     preview.classList.remove('has-image');
 }
 
+// Preview de imagen al agregar
 function previewImageAdd(event) {
     const file = event.target.files[0];
     const preview = document.getElementById('addImagePreview');
@@ -149,64 +182,81 @@ function previewImageAdd(event) {
     }
 }
 
-function handleAddProduct(e) {
+// Manejar envío de formulario agregar
+async function handleAddProduct(e) {
     e.preventDefault();
     
-    const formData = {
-        name: document.getElementById('addProductName').value,
-        price: document.getElementById('addProductPrice').value,
-        quantity: document.getElementById('addProductQuantity').value,
-        description: document.getElementById('addProductDescription').value,
-        image: document.getElementById('addProductImage').files[0]
-    };
+    const file = document.getElementById('addProductImage').files[0];
     
-    // Validar que haya imagen
-    if (!formData.image) {
+    if (!file) {
         alert('Por favor selecciona una imagen del producto');
         return;
     }
-    
-    console.log('Producto a agregar:', formData);
-    
-    // Aquí harías la petición POST a tu backend
-    // fetch('/api/products', {
-    //     method: 'POST',
-    //     body: formDataObject
-    // })
-    
-    showNotification('Producto agregado exitosamente', 'success');
-    closeAddModal();
-    
-    // Recargar productos
-    // loadProducts();
+
+    // Convertir imagen a base64
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+        const base64Image = event.target.result;
+
+        const productData = {
+            nombre: document.getElementById('addProductName').value,
+            precio: parseFloat(document.getElementById('addProductPrice').value),
+            cantidad: parseInt(document.getElementById('addProductQuantity').value),
+            descripcion: document.getElementById('addProductDescription').value,
+            imagen_base64: base64Image
+        };
+
+        try {
+            const result = await productService.createProduct(productData);
+
+            if (result.success) {
+                showNotification('Producto agregado exitosamente', 'success');
+                closeAddModal();
+                await loadProducts();
+            } else {
+                showNotification(result.error || 'Error al agregar producto', 'error');
+            }
+        } catch (error) {
+            showNotification('Error de conexión', 'error');
+        }
+    };
+
+    reader.readAsDataURL(file);
 }
 
-// ========== FUNCIONES DE MODAL EDITAR ==========
+// Continuación de admin-products.js
 
-function openEditModal(productId) {
+// Abrir modal de editar
+async function openEditModal(productId) {
     const modal = document.getElementById('editProductModal');
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
     
-    console.log('Modal editar abierto para producto ID:', productId);
-    
-    // Aquí cargarías los datos reales del producto desde tu backend
-    // fetch(`/api/products/${productId}`)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         document.getElementById('editProductName').value = data.name;
-    //         document.getElementById('editProductPrice').value = data.price;
-    //         // etc...
-    //     });
-    
-    // Por ahora usamos datos de ejemplo
-    document.getElementById('editProductName').value = 'MIEL PURA';
-    document.getElementById('editProductPrice').value = '120';
-    document.getElementById('editProductQuantity').value = '50';
-    document.getElementById('editProductDescription').value = 'Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles';
-    document.getElementById('editStockCount').textContent = '50';
+    try {
+        const result = await productService.getProductById(productId);
+        
+        if (result.success) {
+            const product = result.data;
+            
+            // Llenar formulario con datos del producto
+            document.getElementById('editProductName').value = product.nombre;
+            document.getElementById('editProductPrice').value = product.precio;
+            document.getElementById('editProductQuantity').value = product.cantidad;
+            document.getElementById('editProductDescription').value = product.descripcion;
+            document.getElementById('editStockCount').textContent = product.cantidad;
+            
+            // Mostrar imagen actual
+            const preview = document.getElementById('editImagePreview');
+            preview.innerHTML = `<img src="${product.imagen_base64 || '/images/productosmiel'}" alt="${product.nombre}">`;
+            preview.classList.add('has-image');
+        }
+    } catch (error) {
+        showNotification('Error al cargar producto', 'error');
+        closeEditModal();
+    }
 }
 
+// Cerrar modal de editar
 function closeEditModal() {
     const modal = document.getElementById('editProductModal');
     modal.classList.remove('active');
@@ -214,6 +264,7 @@ function closeEditModal() {
     currentProductId = null;
 }
 
+// Preview de imagen al editar
 function previewImageEdit(event) {
     const file = event.target.files[0];
     const preview = document.getElementById('editImagePreview');
@@ -230,52 +281,74 @@ function previewImageEdit(event) {
     }
 }
 
-function handleEditProduct(e) {
+// Manejar envío de formulario editar
+async function handleEditProduct(e) {
     e.preventDefault();
     
-    const formData = {
-        id: currentProductId,
-        name: document.getElementById('editProductName').value,
-        price: document.getElementById('editProductPrice').value,
-        quantity: document.getElementById('editProductQuantity').value,
-        description: document.getElementById('editProductDescription').value,
-        image: document.getElementById('editProductImage').files[0]
+    const file = document.getElementById('editProductImage').files[0];
+    
+    const productData = {
+        nombre: document.getElementById('editProductName').value,
+        precio: parseFloat(document.getElementById('editProductPrice').value),
+        cantidad: parseInt(document.getElementById('editProductQuantity').value),
+        descripcion: document.getElementById('editProductDescription').value
     };
-    
-    console.log('Producto a actualizar:', formData);
-    
-    // Aquí harías la petición PUT/PATCH a tu backend
-    // fetch(`/api/products/${currentProductId}`, {
-    //     method: 'PUT',
-    //     body: formDataObject
-    // })
-    
-    showNotification('Producto actualizado exitosamente', 'success');
-    closeEditModal();
-    
-    // Recargar productos
-    // loadProducts();
-}
 
-function deleteProduct() {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-        console.log('Eliminar producto ID:', currentProductId);
-        
-        // Aquí harías la petición DELETE a tu backend
-        // fetch(`/api/products/${currentProductId}`, {
-        //     method: 'DELETE'
-        // })
-        
-        showNotification('Producto eliminado exitosamente', 'error');
-        closeEditModal();
-        
-        // Recargar productos
-        // loadProducts();
+    // Si hay nueva imagen, convertir a base64
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            productData.imagen_base64 = event.target.result;
+            await updateProduct(productData);
+        };
+        reader.readAsDataURL(file);
+    } else {
+        await updateProduct(productData);
     }
 }
 
-// ========== FUNCIONES AUXILIARES ==========
+// Actualizar producto
+async function updateProduct(productData) {
+    try {
+        const result = await productService.updateProduct(currentProductId, productData);
 
+        if (result.success) {
+            showNotification('Producto actualizado exitosamente', 'success');
+            closeEditModal();
+            await loadProducts();
+        } else {
+            showNotification(result.error || 'Error al actualizar producto', 'error');
+        }
+    } catch (error) {
+        showNotification('Error de conexión', 'error');
+    }
+}
+
+// Eliminar producto
+async function deleteProduct() {
+    if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+        return;
+    }
+
+    try {
+        const result = await productService.deleteProduct(currentProductId);
+
+        if (result.success) {
+            showNotification('Producto eliminado exitosamente', 'error');
+            closeEditModal();
+            await loadProducts();
+        } else {
+            showNotification(result.error || 'Error al eliminar producto', 'error');
+        }
+    } catch (error) {
+        showNotification('Error de conexión', 'error');
+    }
+}
+
+// Hacer deleteProduct global para que funcione desde el HTML
+window.deleteProduct = deleteProduct;
+
+// Mostrar notificación
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
     notification.style.cssText = `

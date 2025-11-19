@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/.css/shipping.css">
+    <link rel="stylesheet" href="/css/shipping.css">
     <title>Dirección de Envío - Miel de la Selva Maya</title>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <a href="/.html/principal.html">
+                <a href="/index.html">
                     <img src="/images/LOGO.png" alt="Logo Miel de la Selva Maya">
                 </a>
             </div>
@@ -34,11 +33,9 @@
         </div>
     </header>
 
-    <!-- Shipping Section -->
     <section class="shipping-section">
         <div class="shipping-container">
             <div class="shipping-card">
-                <!-- Header con botón de regresar -->
                 <div class="shipping-header">
                     <button class="btn-back" onclick="window.location.href='/.html/checkout.html'">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -48,9 +45,7 @@
                     <h2>DIRECCIÓN DE ENVÍO</h2>
                 </div>
 
-                <!-- Lista de direcciones guardadas -->
                 <div class="addresses-list" id="addressesList">
-                    <!-- Dirección 1 -->
                     <div class="address-card" data-address-id="1">
                         <div class="address-info">
                             <p class="address-street">Carretera Villaflores s/n</p>
@@ -60,7 +55,6 @@
                         <input type="radio" name="shipping-address" value="1" checked>
                     </div>
 
-                    <!-- Dirección 2 -->
                     <div class="address-card" data-address-id="2">
                         <div class="address-info">
                             <p class="address-street">Carretera Villaflores s/n</p>
@@ -70,7 +64,6 @@
                         <input type="radio" name="shipping-address" value="2">
                     </div>
 
-                    <!-- Botón agregar nueva dirección -->
                     <button class="btn-add-address" id="btnAddAddress">
                         <span class="plus-icon">+</span>
                         <span>AGREGAR NUEVA DIRECCIÓN</span>
@@ -88,6 +81,6 @@
         </div>
     </section>
 
-    <script src="/.js/shipping-address.js"></script>
+    <script src="/js/shipping-address.js"></script>
 </body>
 </html>

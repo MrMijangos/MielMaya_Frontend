@@ -1,3 +1,7 @@
+// common/header/header.js - Actualizar con integración de logout
+
+import authService from '../api/auth-service.js';
+
 export function getUserSidebarHTML() {
     return `
         <div class="user-sidebar" id="userSidebar">
@@ -6,7 +10,7 @@ export function getUserSidebarHTML() {
                     <div class="user-avatar">
                         <img src="/images/perfil.png" alt="Usuario">
                     </div>
-                    <h3 class="user-name" id="userName">JOSE PABLITO</h3>
+                    <h3 class="user-name" id="userName">CARGANDO...</h3>
                 </div>
                 <button class="user-close-btn" id="closeUserBtn">✕</button>
             </div>
@@ -59,6 +63,17 @@ export function injectUserSidebar() {
 export class UserSidebar {
     constructor() {
         this.init();
+        this.loadUserData();
+    }
+
+    async loadUserData() {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (userData) {
+            const userName = document.getElementById('userName');
+            if (userName) {
+                userName.textContent = userData.nombre.toUpperCase();
+            }
+        }
     }
 
     init() {
@@ -123,14 +138,15 @@ export class UserSidebar {
         }
     }
 
-    logout() {
+    async logout() {
         if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-            localStorage.removeItem('userData');
-            localStorage.removeItem('selectedPaymentMethod');
-            localStorage.removeItem('selectedShippingAddress');
+            await authService.logout();
             
-            alert('Sesión cerrada exitosamente');
-            window.location.href = '/.html/login.html';
+            showNotification('Sesión cerrada exitosamente');
+            
+            setTimeout(() => {
+                window.location.href = '/.html/login.html';
+            }, 1000);
         }
     }
 }
@@ -138,4 +154,26 @@ export class UserSidebar {
 export function initUserSidebar() {
     injectUserSidebar();
     return new UserSidebar();
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }

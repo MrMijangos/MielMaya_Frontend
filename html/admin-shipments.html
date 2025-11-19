@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/.css/admin.css">
+    <link rel="stylesheet" href="/css/admin.css">
     <title>Administrador de Envíos - Miel de la Selva Maya</title>
 </head>
 <body>
@@ -34,7 +34,6 @@
         </div>
     </header>
 
-    <!-- Features Section -->
     <section class="features-section">
         <div class="features-container">
             <div class="feature-card">
@@ -60,10 +59,8 @@
         </div>
     </section>
 
-    <!-- Admin Shipments Section -->
     <section class="admin-section">
         <div class="admin-container">
-            <!-- Header con botón de regresar -->
             <div class="admin-header">
                 <button class="btn-back" onclick="window.location.href='/index.html'">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -73,16 +70,13 @@
                 <h1>SECCIÓN DE ENVÍOS</h1>
             </div>
 
-            <!-- Tabs de filtros -->
             <div class="shipment-tabs">
                 <button class="tab-btn active" data-status="pending">PENDIENTES DE ENVÍO</button>
                 <button class="tab-btn" data-status="shipped">ENVIADOS</button>
                 <button class="tab-btn" data-status="delivered">ENTREGADOS</button>
             </div>
 
-            <!-- Lista de envíos pendientes -->
             <div class="shipments-list" id="shipmentsList">
-                <!-- Envío 1 -->
                 <div class="shipment-item" data-status="pending">
                     <div class="shipment-main">
                         <div class="shipment-product">
@@ -105,7 +99,6 @@
                     </div>
                 </div>
 
-                <!-- Envío 2 -->
                 <div class="shipment-item" data-status="pending">
                     <div class="shipment-main">
                         <div class="shipment-product">
@@ -128,7 +121,6 @@
                     </div>
                 </div>
 
-                <!-- Envío 3 -->
                 <div class="shipment-item" data-status="pending">
                     <div class="shipment-main">
                         <div class="shipment-product">
@@ -151,7 +143,6 @@
                     </div>
                 </div>
 
-                <!-- Envío 4 -->
                 <div class="shipment-item" data-status="pending">
                     <div class="shipment-main">
                         <div class="shipment-product">
@@ -174,7 +165,6 @@
                     </div>
                 </div>
 
-                <!-- Envíos con otros estados (ocultos por defecto) -->
                 <div class="shipment-item" data-status="shipped" style="display: none;">
                     <div class="shipment-main">
                         <div class="shipment-product">
@@ -220,7 +210,6 @@
                 </div>
             </div>
 
-            <!-- Sección de Cancelados -->
             <div class="cancelled-section">
                 <h2 class="section-title">SECCIÓN DE CANCELADOS</h2>
                 
@@ -245,7 +234,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-logo">
@@ -255,6 +243,6 @@
         </div>
     </footer>
 
-    <script src="/admin-shipments.js"></script>
+    <script src="/js/admin-shipments.js"></script>
 </body>
 </html>

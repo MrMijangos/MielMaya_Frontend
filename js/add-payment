@@ -1,0 +1,168 @@
+// .js/add-payment.js
+import paymentService from '../common/api/payment-service.js';
+import authService from '../common/api/auth-service.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Verificar autenticación
+    if (!authService.isAuthenticated()) {
+        alert('Debes iniciar sesión');
+        window.location.href = '/html/login.html';
+        return;
+    }
+
+    // Cargar total del carrito
+    loadCartTotal();
+    
+    // Formateo de campos
+    setupCardFormatting();
+    
+    // Event listener para agregar tarjeta
+    document.getElementById('btnAddCard')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const form = document.getElementById('paymentForm');
+        if (!form.checkValidity()) {
+            alert('Por favor completa todos los campos');
+            form.reportValidity();
+            return;
+        }
+
+        // Validar número de tarjeta
+        const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+        if (!validateCardNumber(cardNumber)) {
+            alert('Número de tarjeta inválido');
+            return;
+        }
+
+        // Validar CVV
+        const cvv = document.getElementById('cardCVV').value;
+        if (cvv.length < 3 || cvv.length > 4) {
+            alert('CVV inválido');
+            return;
+        }
+
+        // Mostrar loading
+        const btn = document.getElementById('btnAddCard');
+        const originalText = btn.textContent;
+        btn.textContent = 'AGREGANDO...';
+        btn.disabled = true;
+
+        try {
+            const result = await paymentService.addPaymentMethod({
+                nombre_tarjeta: document.getElementById('cardName').value,
+                num_tarjeta: cardNumber,
+                fecha_expiracion: document.getElementById('cardMonth').value,
+                CVV: cvv
+            });
+
+            if (result.success) {
+                showNotification('Método de pago agregado exitosamente', 'success');
+                setTimeout(() => {
+                    window.location.href = '/.html/checkout.html';
+                }, 1500);
+            } else {
+                showNotification(result.error || 'Error al agregar método de pago', 'error');
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            showNotification('Error de conexión', 'error');
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    });
+});
+
+function loadCartTotal() {
+    const total = localStorage.getItem('cartTotal') || '0.00';
+    const totalElement = document.getElementById('addPaymentTotal');
+    if (totalElement) {
+        totalElement.textContent = `$${total}`;
+    }
+}
+
+function setupCardFormatting() {
+    // Formateo del número de tarjeta
+    const cardNumber = document.getElementById('cardNumber');
+    cardNumber?.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\s/g, '');
+        value = value.replace(/\D/g, '');
+        value = value.replace(/(\d{4})/g, '$1 ').trim();
+        e.target.value = value.substring(0, 19); // 16 dígitos + 3 espacios
+    });
+    
+    // Formateo de MM/AA
+    const cardMonth = document.getElementById('cardMonth');
+    const cardExpiry = document.getElementById('cardExpiry');
+    
+    [cardMonth, cardExpiry].forEach(input => {
+        input?.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+    });
+    
+    // Solo números en CVV
+    const cardCVV = document.getElementById('cardCVV');
+    cardCVV?.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+    
+    // Solo letras en nombre
+    const cardName = document.getElementById('cardName');
+    cardName?.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+    });
+}
+
+// Algoritmo de Luhn para validar tarjetas
+function validateCardNumber(cardNumber) {
+    if (!/^\d{13,19}$/.test(cardNumber)) {
+        return false;
+    }
+
+    let sum = 0;
+    let isEven = false;
+
+    for (let i = cardNumber.length - 1; i >= 0; i--) {
+        let digit = parseInt(cardNumber[i]);
+
+        if (isEven) {
+            digit *= 2;
+            if (digit > 9) {
+                digit -= 9;
+            }
+        }
+
+        sum += digit;
+        isEven = !isEven;
+    }
+
+    return sum % 10 === 0;
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}

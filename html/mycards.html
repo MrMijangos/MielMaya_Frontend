@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/.css/checkout.css">
+    <link rel="stylesheet" href="/css/checkout.css">
     <title>Método de Pago - Miel de la Selva Maya</title>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <a href="/.html/principal.html">
+                <a href="/index.html">
                     <img src="/images/LOGO.png" alt="Logo Miel de la Selva Maya">
                 </a>
             </div>
@@ -34,11 +33,9 @@
         </div>
     </header>
 
-    <!-- Checkout Section -->
     <section class="checkout-section">
         <div class="checkout-container">
             <div class="checkout-card">
-                <!-- Header con boton de regresar -->
                 <div class="checkout-header">
                     <button class="btn-back" onclick="window.history.back()">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -49,7 +46,6 @@
                 </div>
 
                 <div class="payment-methods" id="paymentMethods">
-                    <!-- Método 1 - Mastercard -->
                     <div class="payment-method-card" data-card-id="1">
                         <div class="payment-card-visual mastercard">
                             <div class="card-logo">
@@ -64,7 +60,6 @@
                         <input type="radio" name="payment-method" value="1" checked>
                     </div>
 
-                    <!-- Método 2 - Visa -->
                     <div class="payment-method-card" data-card-id="2">
                         <div class="payment-card-visual visa">
                             <div class="card-logo">
@@ -80,24 +75,17 @@
                         <input type="radio" name="payment-method" value="2">
                     </div>
 
-                    <!-- Botón agregar nuevo método -->
                     <button class="btn-add-payment" id="btnAddPayment">
                         <span class="plus-icon">+</span>
                         <span>AGREGAR NUEVO MÉTODO DE PAGO</span>
                     </button>
                 </div>
-
-                <div class="checkout-footer">
-                    <div class="checkout-total">
-                        <span>SUBTOTAL</span>
-                        <span class="total-amount" id="checkoutTotal">$300</span>
-                    </div>
-                    <button class="btn-proceed" id="btnProceed">PROCEDER A LA DIRECCION DE ENVIO</button>
+                    <button class="btn-proceed" id="btnProceed">guardar</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <script src="/.js/checkout.js"></script>
+    <script src="/js/checkout.js"></script>
 </body>
 </html>

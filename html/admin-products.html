@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/.css/admin-products.css">
+    <link rel="stylesheet" href="/css/admin-products.css">
     <title>Administrar Productos - Miel de la Selva Maya</title>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-container">
             <div class="logo">
@@ -35,7 +34,6 @@
         </div>
     </header>
 
-    <!-- Features Section -->
     <section class="features-section">
         <div class="features-container">
             <div class="feature-card">
@@ -61,18 +59,14 @@
         </div>
     </section>
 
-    <!-- Admin Products Section -->
     <section class="admin-products-section">
         <div class="admin-products-container">
-            <!-- Header -->
             <div class="section-header">
                 <h2 class="section-title">TODOS NUESTROS PRODUCTOS</h2>
                 <p class="section-subtitle">Los mejores de nuestros productos<br>según nuestros clientes</p>
             </div>
 
-            <!-- Products Grid -->
             <div class="products-grid">
-                <!-- Producto 1 -->
                 <div class="product-card">
                     <div class="product-image">
                         <img src="/images/productosmiel" alt="Miel Pura">
@@ -82,7 +76,6 @@
                     <button class="btn-edit-product" data-id="1">EDITAR</button>
                 </div>
 
-                <!-- Producto 2 -->
                 <div class="product-card">
                     <div class="product-image">
                         <img src="/images/productosmiel" alt="Miel Pura">
@@ -92,7 +85,6 @@
                     <button class="btn-edit-product" data-id="2">EDITAR</button>
                 </div>
 
-                <!-- Producto 3 -->
                 <div class="product-card">
                     <div class="product-image">
                         <img src="/images/productosmiel" alt="Miel Pura">
@@ -102,7 +94,6 @@
                     <button class="btn-edit-product" data-id="3">EDITAR</button>
                 </div>
 
-                <!-- Producto 4 -->
                 <div class="product-card">
                     <div class="product-image">
                         <img src="/images/productosmiel" alt="Miel Pura">
@@ -112,7 +103,7 @@
                     <button class="btn-edit-product" data-id="4">EDITAR</button>
                 </div>
 
-                <!-- Producto 5 -->
+                
                 <div class="product-card">
                     <div class="product-image">
                         <img src="/images/productosmiel" alt="Miel Pura">
@@ -122,7 +113,6 @@
                     <button class="btn-edit-product" data-id="5">EDITAR</button>
                 </div>
 
-                <!-- Producto 6 -->
                 <div class="product-card">
                     <div class="product-image">
                         <img src="/images/productosmiel" alt="Miel Pura">
@@ -133,19 +123,19 @@
                 </div>
             </div>
 
-            <!-- Botón Añadir Productos -->
+       
             <div class="add-product-container">
                 <button class="btn-add-products" id="btnAddProducts">AÑADIR PRODUCTOS</button>
             </div>
         </div>
     </section>
 
-    <!-- Reviews Section -->
+   
     <section class="reviews-section">
         <h2 class="section-title">CLIENTES FELICES</h2>
         
         <div class="reviews-grid">
-            <!-- Review 1 -->
+         
             <div class="review-card">
                 <div class="review-header">
                     <div class="review-avatar">
@@ -161,7 +151,6 @@
                 </div>
             </div>
 
-            <!-- Review 2 -->
             <div class="review-card">
                 <div class="review-header">
                     <div class="review-avatar">
@@ -174,7 +163,6 @@
                 </div>
             </div>
 
-            <!-- Review 3 -->
             <div class="review-card">
                 <div class="review-header">
                     <div class="review-avatar">
@@ -187,7 +175,6 @@
                 </div>
             </div>
 
-            <!-- Review 4 -->
             <div class="review-card">
                 <div class="review-header">
                     <div class="review-avatar">
@@ -201,12 +188,10 @@
             </div>
         </div>
 
-        <!-- Botón Ver Todas las Reseñas -->
         <div class="view-all-reviews-container">
             <button class="btn-view-reviews">VER TODAS LAS RESEÑAS</button>
         </div>
     </section>
-    <!-- Modal para Agregar Producto -->
 <div class="modal-overlay" id="addProductModal">
     <div class="modal-container-add">
         <div class="modal-header-add">
@@ -218,7 +203,6 @@
         </div>
 
         <form class="product-form-add" id="addProductForm">
-            <!-- Icono de Imagen Grande -->
             <div class="image-upload-area">
                 <div class="image-preview-large" id="addImagePreview">
                     <svg width="120" height="120" viewBox="0 0 100 100" fill="none">
@@ -235,7 +219,6 @@
                 <input type="file" id="addProductImage" accept="image/*" style="display: none;">
             </div>
 
-            <!-- Campos del formulario -->
             <div class="form-fields-compact">
                 <div class="form-group-compact">
                     <input 
@@ -283,13 +266,11 @@
                 </div>
             </div>
 
-            <!-- Botón de Agregar -->
             <button type="submit" class="btn-add-product-submit">AGREGAR PRODUCTO</button>
         </form>
     </div>
 </div>
 
-<!-- Modal para Editar Producto -->
 <div class="modal-overlay" id="editProductModal">
     <div class="modal-container-add">
         <div class="modal-header-add">
@@ -301,7 +282,6 @@
         </div>
 
         <form class="product-form-add" id="editProductForm">
-            <!-- Icono de Imagen con foto del producto -->
             <div class="image-upload-area">
                 <div class="image-preview-large has-image" id="editImagePreview">
                     <img src="/images/productosmiel" alt="Producto">
@@ -309,7 +289,6 @@
                 <input type="file" id="editProductImage" accept="image/*" style="display: none;">
             </div>
 
-            <!-- Campos del formulario pre-llenados -->
             <div class="form-fields-compact">
                 <div class="form-group-compact">
                     <input 
@@ -360,7 +339,6 @@
                 </div>
             </div>
 
-            <!-- Botones de Eliminar y Guardar -->
             <div class="edit-actions">
                 <button type="button" class="btn-delete-product" onclick="deleteProduct()">
                     ELIMINAR PRODUCTO
@@ -373,7 +351,6 @@
     </div>
 </div>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-logo">
@@ -383,6 +360,6 @@
         </div>
         
     </footer>
-    <script src="/.js/admin-products.js"></script>
+    <script src="/js/admin-products.js"></script>
 </body>
 </html>
