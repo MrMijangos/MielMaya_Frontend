@@ -1,42 +1,39 @@
-// common/api/shipping-service.js
 import apiClient from './api-client.js';
 
 class ShippingService {
-    async getAllAddresses() {
-        try {
-            const addresses = await apiClient.get('/shipping');
-            return { success: true, data: addresses };
-        } catch (error) {
-            return { success: false, error: error.message };
-        }
-    }
-
-    async addAddress(addressData) {
+    
+    async getAllShipments() {
         try {
             const userData = JSON.parse(localStorage.getItem('userData'));
-            
-            const address = await apiClient.post('/shipping', {
-                id_user: userData.id_user,
-                calle: addressData.calle,
-                num: addressData.num,
-                ext: addressData.ext,
-                codigo_postal: addressData.codigo_postal,
-                colonia: addressData.colonia,
-                estado: addressData.estado,
-                municipio: addressData.municipio,
-                celular: addressData.celular
-            });
-            
-            return { success: true, data: address };
+            const userId = userData?.id_user || userData?.id || userData?.idUsuario;
+            if (!userId) throw new Error("Usuario no identificado");
+
+            const shipments = await apiClient.get(`/api/shipping-address?idUsuario=${userId}`);
+            return { success: true, data: shipments };
         } catch (error) {
             return { success: false, error: error.message };
         }
     }
 
-    async deleteAddress(id) {
+    async addShippingMethod(data) {
         try {
-            await apiClient.delete(`/shipping/${id}`);
-            return { success: true };
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            const userId = userData?.id_user || userData?.id || userData?.idUsuario;
+
+            if (!userId) throw new Error("Usuario no identificado");
+
+            // --- AQUÍ SE ARMA EL OBJETO PARA JAVA ---
+            // Java debe tener una clase con: idUsuario, calle, colonia, codigoPostal, ciudad, estado
+            const shipment = await apiClient.post('/api/shipping-address', {
+                idUsuario: userId,
+                calle: data.calle,
+                colonia: data.colonia,
+                codigoPostal: data.codigoPostal,
+                ciudad: data.ciudad,
+                estado: data.estado
+            });
+            
+            return { success: true, data: shipment };
         } catch (error) {
             return { success: false, error: error.message };
         }

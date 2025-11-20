@@ -61,7 +61,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 nombre,
                 correo,
                 contrasenia: password,
-                celular
+                celular,
+                ID_Rol: 1 // 👈 Registrar como admin temporalmente
             });
 
             if (result.success) {

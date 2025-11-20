@@ -3,150 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/shipping.css">
-    <title>Agregar Dirección - Miel de la Selva Maya</title>
+    <link rel="stylesheet" href="/css/checkout.css">
+    <title>Nueva Dirección - Miel de la Selva Maya</title>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-container">
-            <div class="logo">
-                <a href="/index.html">
-                    <img src="/images/LOGO.png" alt="Logo Miel de la Selva Maya">
-                </a>
-            </div>
-            
+            <div class="logo"><a href="/index.html"><img src="/images/LOGO.png" alt="Logo"></a></div>
             <div class="search-bar">
                 <input type="text" placeholder="Buscar productos...">
-                <button type="button" class="search-btn">
-                    <img src="/images/buscar.png" alt="">
-                </button>
+                <button type="button" class="search-btn"><img src="/images/buscar.png" alt=""></button>
             </div>
-            
             <div class="header-icons">
-                <button class="icon-btn cart-btn" onclick="window.location.href='/.html/shipping-address.html'">
-                    <img src="/images/carrito-de-compras.png" alt="">
-                </button>
-                <button class="icon-btn user-btn">
-                    <img src="/images/perfil.png" alt="">
-                </button>
+                <button class="icon-btn cart-btn"><img src="/images/carrito-de-compras.png" alt=""></button>
+                <button class="icon-btn user-btn"><img src="/images/perfil.png" alt=""></button>
             </div>
         </div>
     </header>
 
-    <!-- Add Shipping Section -->
-    <section class="shipping-section">
-        <div class="shipping-container">
-            <div class="shipping-card">
-                <!-- Header con botón de regresar -->
-                <div class="shipping-header">
-                    <button class="btn-back" onclick="window.location.href='/.html/shipping-address.html'">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
+    <section class="checkout-section">
+        <div class="checkout-container">
+            <div class="checkout-card">
+                <div class="checkout-header">
+                    <button class="btn-back" onclick="window.history.back()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                     </button>
-                    <h2>DIRECCIÓN DE ENVÍO</h2>
+                    <h2>NUEVA DIRECCIÓN</h2>
                 </div>
 
-                <!-- Formulario de dirección -->
-                <form class="shipping-form" id="shippingForm">
+                <form class="payment-form" id="shippingForm">
                     <div class="form-group">
-                        <input 
-                            type="text" 
-                            id="street" 
-                            placeholder="Calle, núm, ext" 
-                            required
-                        >
+                        <label>Calle y Número</label>
+                        <input type="text" id="shippingStreet" placeholder="Ej: Av. Siempre Viva 123" required>
                     </div>
 
                     <div class="form-group">
-                        <input 
-                            type="text" 
-                            id="zipCode" 
-                            placeholder="Código postal" 
-                            maxlength="5"
-                            required
-                        >
+                        <label>Colonia</label>
+                        <input type="text" id="shippingColony" placeholder="Ej: Centro" required>
                     </div>
 
-                    <div class="form-group">
-                        <input 
-                            type="text" 
-                            id="colony" 
-                            placeholder="Colonia" 
-                            required
-                        >
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ciudad</label>
+                            <input type="text" id="shippingCity" placeholder="Ej: Tuxtla Gutiérrez" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <input type="text" id="shippingState" placeholder="Ej: Chiapas" required>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <select id="state" required>
-                            <option value="" disabled selected>Estado</option>
-                            <option value="Aguascalientes">Aguascalientes</option>
-                            <option value="Baja California">Baja California</option>
-                            <option value="Baja California Sur">Baja California Sur</option>
-                            <option value="Campeche">Campeche</option>
-                            <option value="Chiapas">Chiapas</option>
-                            <option value="Chihuahua">Chihuahua</option>
-                            <option value="Coahuila">Coahuila</option>
-                            <option value="Colima">Colima</option>
-                            <option value="CDMX">Ciudad de México</option>
-                            <option value="Durango">Durango</option>
-                            <option value="Guanajuato">Guanajuato</option>
-                            <option value="Guerrero">Guerrero</option>
-                            <option value="Hidalgo">Hidalgo</option>
-                            <option value="Jalisco">Jalisco</option>
-                            <option value="México">Estado de México</option>
-                            <option value="Michoacán">Michoacán</option>
-                            <option value="Morelos">Morelos</option>
-                            <option value="Nayarit">Nayarit</option>
-                            <option value="Nuevo León">Nuevo León</option>
-                            <option value="Oaxaca">Oaxaca</option>
-                            <option value="Puebla">Puebla</option>
-                            <option value="Querétaro">Querétaro</option>
-                            <option value="Quintana Roo">Quintana Roo</option>
-                            <option value="San Luis Potosí">San Luis Potosí</option>
-                            <option value="Sinaloa">Sinaloa</option>
-                            <option value="Sonora">Sonora</option>
-                            <option value="Tabasco">Tabasco</option>
-                            <option value="Tamaulipas">Tamaulipas</option>
-                            <option value="Tlaxcala">Tlaxcala</option>
-                            <option value="Veracruz">Veracruz</option>
-                            <option value="Yucatán">Yucatán</option>
-                            <option value="Zacatecas">Zacatecas</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <input 
-                            type="text" 
-                            id="municipio" 
-                            placeholder="Municipio" 
-                            required
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <input 
-                            type="tel" 
-                            id="phone" 
-                            placeholder="Celular" 
-                            maxlength="10"
-                            required
-                        >
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Código Postal</label>
+                            <input type="text" id="shippingZip" placeholder="Ej: 29000" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="text" id="shippingPhone" placeholder="10 dígitos" maxlength="10">
+                        </div>
                     </div>
                 </form>
 
-                <div class="shipping-footer">
-                    <div class="shipping-total">
-                        <span>SUBTOTAL</span>
-                        <span class="total-amount" id="addShippingTotal">$300</span>
-                    </div>
-                    <button class="btn-proceed" id="btnAddShipping">AGREGAR DIRECCIÓN DE ENVÍO</button>
+                <div class="checkout-footer">
+                    <button class="btn-proceed" id="btnAddAddressBtn">GUARDAR DIRECCIÓN</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <script src="/js/add-shipping.js"></script>
+   <script type="module" src="../js/add-shipping.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 // services/auth-service.js
-const API_BASE_URL = 'http://localhost:7000/api';
+const API_BASE_URL = 'http://54.152.16.222:7000/api';
 
 class AuthService {
     async register(userData) {
@@ -13,7 +13,8 @@ class AuthService {
                     nombre: userData.nombre,
                     correo: userData.correo,
                     contrasenia: userData.contrasenia,
-                    celular: userData.celular || ''
+                    celular: userData.celular || '',
+                    ID_Rol: userData.ID_Rol || 1 // Permite registrar como admin si se pasa el campo
                 })
             });
 

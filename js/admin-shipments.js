@@ -1,92 +1,201 @@
-// Gestión de tabs
-document.addEventListener('DOMContentLoaded', () => {
+import authService from '../services/auth-service.js';
+
+const API_BASE_URL = 'http://54.152.16.222:7000/api';
+const DEFAULT_IMAGE = '/images/productosmiel'; 
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Validar sesión (opcional)
+    if (!authService.isAuthenticated()) {
+        alert('Debes iniciar sesión como admin');
+        window.location.href = '/html/login.html';
+        return;
+    }
+
+    // 2. Iniciar lógica
+    setupTabs();
+    await loadOrders();
+});
+
+function setupTabs() {
     const tabs = document.querySelectorAll('.tab-btn');
-    const shipments = document.querySelectorAll('.shipment-item');
-    
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            // Remover active de todos los tabs
             tabs.forEach(t => t.classList.remove('active'));
-            
-            // Agregar active al tab clickeado
             tab.classList.add('active');
-            
-            // Filtrar envíos
             const status = tab.dataset.status;
             filterShipments(status);
         });
     });
-});
+}
+
+async function loadOrders() {
+    const container = document.getElementById('shipmentsList');
+    
+    try {
+        // Llamada SIN parámetros para obtener JSON del admin
+        const response = await fetch(`${API_BASE_URL}/orders`);
+        
+        if (!response.ok) throw new Error('Error al conectar con API');
+        
+        const orders = await response.json();
+
+        if (!orders || orders.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:20px;">No hay pedidos.</p>';
+            return;
+        }
+
+        renderOrders(orders);
+        filterShipments('pending'); // Filtrar pendientes por defecto
+
+    } catch (error) {
+        console.error(error);
+        container.innerHTML = '<p style="color:red; text-align:center;">Error al cargar datos.</p>';
+    }
+}
+
+function renderOrders(orders) {
+    const container = document.getElementById('shipmentsList');
+    container.innerHTML = '';
+
+    orders.forEach(order => {
+        // **IMPORTANTE:** Usa el ID correcto del pedido
+        const orderId = order.idPedido || order.numeroPedido; 
+        
+        // Lógica de estados
+        let statusClass = 'pending';
+        let nextStatus = ''; // El estado al que pasará
+        const estadoDB = order.estado ? order.estado.toUpperCase() : 'CREADO';
+
+        if (estadoDB === 'CREADO' || estadoDB === 'PENDING') {
+            statusClass = 'pending';
+            nextStatus = 'ENVIADO';
+        } else if (estadoDB === 'ENVIADO' || estadoDB === 'SHIPPED') {
+            statusClass = 'shipped';
+            nextStatus = 'ENTREGADO';
+        } else if (estadoDB === 'ENTREGADO' || estadoDB === 'DELIVERED') {
+            statusClass = 'delivered';
+        }
+
+        // Botón de acción dinámico
+        let actionHtml = '';
+        if (statusClass === 'pending') {
+            actionHtml = `<button 
+                class="btn-update" 
+                onclick="updateOrderStatus(${orderId}, '${nextStatus}')">
+                MARCAR ENVIADO
+            </button>`;
+        } else if (statusClass === 'shipped') {
+            actionHtml = `<button 
+                class="btn-update" 
+                onclick="updateOrderStatus(${orderId}, '${nextStatus}')">
+                MARCAR ENTREGADO
+            </button>`;
+        } else {
+            actionHtml = `<span style="color:green; font-weight:bold;">✓ ENTREGADO</span>`;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'shipment-item';
+        div.dataset.status = statusClass;
+        div.style.display = 'flex'; 
+
+        div.innerHTML = `
+            <div class="shipment-main">
+                <div class="shipment-product">
+                    <img src="${DEFAULT_IMAGE}" alt="Pedido" class="shipment-image" onerror="this.src='${DEFAULT_IMAGE}'">
+                    <div class="product-details">
+                        <h3 class="product-name">Pedido #${orderId}</h3>
+                        <p class="product-description">Fecha: ${new Date(order.fecha).toLocaleDateString()}</p>
+                        <div class="product-quantity">Total: <strong>$${order.total}</strong></div>
+                    </div>
+                </div>
+                
+                <div class="shipment-info">
+                    <h4 class="customer-name">${order.nombreUsuario}</h4>
+                    <p class="shipping-address">
+                        ${order.direccionCompleta} <br>
+                        <strong>Tel:</strong> ${order.telefono || 'N/A'}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="shipment-actions">
+                ${actionHtml}
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+    
+    // **IMPORTANTE**: Exponer la función al scope global para que los onclick la vean
+    window.updateOrderStatus = updateOrderStatus;
+}
+
+
+async function updateOrderStatus(orderId, newStatus) {
+    if (!confirm(`¿Estás seguro de cambiar el estado del Pedido #${orderId} a ${newStatus}?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
+            method: 'PUT', // Usamos PUT para actualizar
+            headers: {
+                'Content-Type': 'application/json',
+                // Si usas tokens de autenticación, añádelos aquí
+            },
+            body: JSON.stringify({ estado: newStatus })
+        });
+
+        if (!response.ok) {
+            // Intenta leer el cuerpo del error si es JSON
+            let errorMessage = response.statusText;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+                // No es JSON, usa el statusText
+            }
+            throw new Error(`Error al actualizar estado: ${errorMessage}`);
+        }
+
+        alert(`Estado del Pedido #${orderId} actualizado a ${newStatus} correctamente.`);
+        
+        // Recargar pedidos para que la lista se refresque y el pedido se mueva de pestaña
+        await loadOrders(); 
+
+    } catch (error) {
+        console.error('Error al actualizar el estado del pedido:', error);
+        alert(`Fallo en la actualización: ${error.message}`);
+    }
+}
+
 
 function filterShipments(status) {
-    const shipments = document.querySelectorAll('.shipment-item');
+    const items = document.querySelectorAll('.shipment-item');
+    let count = 0;
     
-    shipments.forEach(shipment => {
-        if (shipment.dataset.status === status) {
-            shipment.style.display = 'flex';
+    items.forEach(item => {
+        if (item.dataset.status === status) {
+            item.style.display = 'flex';
+            count++;
         } else {
-            shipment.style.display = 'none';
+            item.style.display = 'none';
         }
     });
-}
 
-function updateShipment(button, newStatus) {
-    const shipmentItem = button.closest('.shipment-item');
-    const currentStatus = shipmentItem.dataset.status;
-    
-    let statusText = '';
-    switch(newStatus) {
-        case 'shipped':
-            statusText = 'enviado';
-            break;
-        case 'delivered':
-            statusText = 'entregado';
-            break;
-    }
-    
-    if (confirm(`¿Estás seguro de marcar este pedido como ${statusText}?`)) {
-        // Actualizar el estado
-        shipmentItem.dataset.status = newStatus;
-        
-        // Animación de salida
-        shipmentItem.style.opacity = '0';
-        shipmentItem.style.transform = 'translateX(20px)';
-        
-        setTimeout(() => {
-            shipmentItem.style.display = 'none';
-            
-            // Mostrar notificación
-            showNotification(`Pedido actualizado a ${statusText}`);
-            
-            // Aquí harías la petición al servidor
-            // updateShipmentStatus(shipmentId, newStatus);
-        }, 300);
+    const container = document.getElementById('shipmentsList');
+    // Remover mensaje "vacío" anterior si existe
+    const msg = document.getElementById('msg-empty');
+    if (msg) msg.remove();
+
+    if (count === 0) {
+        const p = document.createElement('p');
+        p.id = 'msg-empty';
+        p.textContent = 'No hay pedidos en esta categoría.';
+        p.style.textAlign = 'center';
+        p.style.width = '100%';
+        p.style.padding = '20px';
+        container.appendChild(p);
     }
 }
-
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 90px;
-        right: 20px;
-        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-        color: white;
-        padding: 16px 28px;
-        border-radius: 10px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        z-index: 2000;
-        font-size: 14px;
-        font-weight: bold;
-        animation: slideIn 0.3s ease;
-    `;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 2500);
-}
-

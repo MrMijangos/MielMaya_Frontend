@@ -1,93 +1,90 @@
+import shippingService from '../common/api/shipping-service.js';
+import authService from '../services/auth-service.js';
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Verificar que haya un método de pago seleccionado
-    checkPaymentMethod();
     
-    // Cargar total del carrito
-    loadCartTotal();
-    
-    // Formateo de campos
-    setupAddressFormatting();
-    
-    // Event listener para agregar dirección
-    document.getElementById('btnAddShipping')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        const form = document.getElementById('shippingForm');
-        if (form.checkValidity()) {
-            // Guardar dirección
-            const newAddress = {
-                street: document.getElementById('street').value,
-                zipCode: document.getElementById('zipCode').value,
-                colony: document.getElementById('colony').value,
-                state: document.getElementById('state').value,
-                municipality: document.getElementById('municipality').value,
-                phone: document.getElementById('phone').value
-            };
-            
-            // Aquí guardarías la dirección en tu base de datos
-            alert('Dirección agregada exitosamente');
-            window.location.href = '/html/shipping-address.html';
-        } else {
-            alert('Por favor completa todos los campos');
-            form.reportValidity();
-        }
-    });
+    if (!authService.isAuthenticated()) {
+        alert('Debes iniciar sesión');
+        window.location.href = '/html/login.html';
+        return;
+    }
+
+    setupInputFormatting();
+
+    const btnAdd = document.getElementById('btnAddAddressBtn');
+    if (btnAdd) {
+        btnAdd.addEventListener('click', handleSaveAddress);
+    }
 });
 
-function checkPaymentMethod() {
-    const paymentMethod = localStorage.getItem('selectedPaymentMethod');
-    
-    if (!paymentMethod) {
-        alert('Debes seleccionar un método de pago primero');
-        window.location.href = '/html/checkout.html';
-        return false;
-    }
-    return true;
-}
+async function handleSaveAddress(e) {
+    e.preventDefault();
 
-function loadCartTotal() {
-    const savedCart = localStorage.getItem('mielCart');
-    if (savedCart) {
-        try {
-            const items = JSON.parse(savedCart);
-            const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const totalElement = document.getElementById('addShippingTotal');
-            if (totalElement) {
-                totalElement.textContent = `$${total.toFixed(2)}`;
-            }
-        } catch (error) {
-            console.error('Error loading cart:', error);
+    const form = document.getElementById('shippingForm');
+    const btnAdd = document.getElementById('btnAddAddressBtn');
+
+    if (!form.checkValidity()) {
+        alert('Por favor completa todos los campos requeridos.');
+        form.reportValidity();
+        return;
+    }
+
+    // --- OBTENER DATOS EXACTOS PARA TU SQL ---
+    const street = document.getElementById('shippingStreet').value; // Calle
+    const colony = document.getElementById('shippingColony').value; // Colonia
+    const city = document.getElementById('shippingCity').value;     // Ciudad
+    const state = document.getElementById('shippingState').value;   // Estado
+    const zip = document.getElementById('shippingZip').value;       // CP
+
+    // UI Loading
+    const originalText = btnAdd.textContent;
+    btnAdd.textContent = 'GUARDANDO...';
+    btnAdd.disabled = true;
+
+    try {
+        const result = await shippingService.addShippingMethod({
+            calle: street,
+            colonia: colony,
+            ciudad: city,
+            estado: state,
+            codigoPostal: zip
+        });
+
+        if (result.success) {
+            showNotification('Dirección guardada exitosamente', 'success');
+            setTimeout(() => {
+                window.location.href = '../html/shipping-address.html';
+            }, 1500);
+        } else {
+            throw new Error(result.error || 'Error al guardar');
         }
+
+    } catch (error) {
+        console.error(error);
+        showNotification(error.message, 'error');
+        btnAdd.textContent = originalText;
+        btnAdd.disabled = false;
     }
 }
 
-function setupAddressFormatting() {
-    // Solo números en código postal
-    const zipCode = document.getElementById('zipCode');
-    zipCode?.addEventListener('input', (e) => {
-        e.target.value = e.target.value.replace(/\D/g, '');
-    });
-    
-    // Solo números en teléfono
-    const phone = document.getElementById('phone');
-    phone?.addEventListener('input', (e) => {
-        e.target.value = e.target.value.replace(/\D/g, '');
-    });
-    
-    // Cargar municipios según el estado seleccionado
-    const stateSelect = document.getElementById('state');
-    const municipalitySelect = document.getElementById('municipality');
-    
-    stateSelect?.addEventListener('change', (e) => {
-        // Aquí cargarías los municipios según el estado
-        // Por ahora, ejemplo simple:
-        municipalitySelect.innerHTML = '<option value="" disabled selected>Municipio</option>';
-        const municipalities = ['Municipio 1', 'Municipio 2', 'Municipio 3'];
-        municipalities.forEach(mun => {
-            const option = document.createElement('option');
-            option.value = mun;
-            option.textContent = mun;
-            municipalitySelect.appendChild(option);
+function setupInputFormatting() {
+    // Solo números para el CP y Teléfono
+    ['shippingZip', 'shippingPhone'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '');
         });
     });
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed; top: 20px; right: 20px;
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+        color: white; padding: 16px 24px; border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10000;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
 }

@@ -2,7 +2,7 @@
 
 class APIClient {
     constructor() {
-        this.baseURL = 'http://localhost:7000';
+        this.baseURL = 'http://54.152.16.222:7000';
         this.token = localStorage.getItem('authToken');
     }
 
@@ -15,7 +15,7 @@ class APIClient {
         }
         const url = `${this.baseURL}${fixedEndpoint}`;
         
-        console.log('🔍 API Call:', url, options.method || 'GET');
+        console.log('🔍 API Call:', url, options.method || 'POST');
         console.log('📦 Request Body:', options.body); // ✅ AGREGADO
         
         const config = {
@@ -32,17 +32,25 @@ class APIClient {
         }
 
         try {
-            const response = await fetch(url, config);
+           const response = await fetch(url, config);
             
-            console.log('📡 Response Status:', response.status); // ✅ AGREGADO
-            
-            // Manejar respuestas sin contenido (204)
+            console.log('📡 Response Status:', response.status); 
+
             if (response.status === 204) {
                 return { success: true };
             }
 
-            const data = await response.json();
-            console.log('📨 Response Data:', data); // ✅ AGREGADO
+            // ✅ CORRECCIÓN: Intentar leer como texto primero
+            const text = await response.text();
+            let data;
+            try {
+                data = JSON.parse(text); // Intentar parsear JSON
+            } catch (e) {
+                // Si falla, usar el texto como mensaje (para "Item eliminado")
+                data = { message: text };
+            }
+
+            console.log('📨 Response Data:', data); 
 
             if (!response.ok) {
                 throw new Error(data.error || data.message || `Error: ${response.status}`);
