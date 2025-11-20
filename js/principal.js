@@ -2,7 +2,8 @@
 import { initUserSidebar } from '../common/header/header.js';
 import productService from '../common/api/product-service.js';
 import cartService from '../common/api/cart-service.js';
-import authService from '../common/api/auth-service.js';
+import authService from '../../services/auth-service.js';
+
 
 /**
  * Lógica principal del carrito y gestión de UI de autenticación
@@ -136,7 +137,7 @@ class ShoppingCart {
                             id: item.id_producto,
                             name: productResult.data.nombre,
                             price: productResult.data.precio,
-                            image: productResult.data.imagen_base64 || '/images/productosmiel.png',
+                            image: productResult.data.imagen_base64 || '/images/productosmiel',
                             quantity: item.cantidad
                         };
                     })
@@ -394,7 +395,7 @@ async function loadProducts() {
             productsGrid.innerHTML = productsToShow.map(product => `
                 <div class="product-card">
                     <div class="product-image">
-                        <img src="${product.imagen_base64 || '/images/productosmiel.png'}" alt="${product.nombre}">
+                        <img src="${product.imagen_base64 || '/images/productosmiel'}" alt="${product.nombre}">
                     </div>
                     <h3 class="product-name">${product.nombre}</h3>
                     <p class="product-price">$${product.precio.toFixed(2)}</p>
@@ -402,7 +403,7 @@ async function loadProducts() {
                             data-id="${product.id_producto}" 
                             data-name="${product.nombre}" 
                             data-price="${product.precio}" 
-                            data-image="${product.imagen_base64 || '/images/productosmiel.png'}">
+                            data-image="${product.imagen_base64 || '/images/productosmiel'}">
                         AÑADIR AL CARRITO
                     </button>
                 </div>

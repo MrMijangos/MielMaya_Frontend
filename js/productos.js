@@ -2,7 +2,7 @@
 import { initUserSidebar } from '../common/header/header.js';
 import productService from '../common/api/product-service.js';
 import cartService from '../common/api/cart-service.js';
-import authService from '../common/api/auth-service.js';
+import authService from '../../services/auth-service.js';
 
 // Usar la misma clase ShoppingCart de principal.js
 class ShoppingCart {
@@ -129,7 +129,7 @@ class ShoppingCart {
                             id: item.id_producto,
                             name: productResult.data.nombre,
                             price: productResult.data.precio,
-                            image: productResult.data.imagen_base64 || '/images/productosmiel',
+                            image: productResult.data.imagen_base64 || 'images/productosmiel.png',
                             quantity: item.cantidad
                         };
                     })

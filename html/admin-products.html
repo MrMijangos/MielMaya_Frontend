@@ -67,75 +67,19 @@
             </div>
 
             <div class="products-grid">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="/images/productosmiel" alt="Miel Pura">
-                    </div>
-                    <h3 class="product-name">MIEL PURA</h3>
-                    <p class="product-price">$120</p>
-                    <button class="btn-edit-product" data-id="1">EDITAR</button>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="/images/productosmiel" alt="Miel Pura">
-                    </div>
-                    <h3 class="product-name">MIEL PURA</h3>
-                    <p class="product-price">$120</p>
-                    <button class="btn-edit-product" data-id="2">EDITAR</button>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="/images/productosmiel" alt="Miel Pura">
-                    </div>
-                    <h3 class="product-name">MIEL PURA</h3>
-                    <p class="product-price">$120</p>
-                    <button class="btn-edit-product" data-id="3">EDITAR</button>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="/images/productosmiel" alt="Miel Pura">
-                    </div>
-                    <h3 class="product-name">MIEL PURA</h3>
-                    <p class="product-price">$120</p>
-                    <button class="btn-edit-product" data-id="4">EDITAR</button>
-                </div>
-
-                
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="/images/productosmiel" alt="Miel Pura">
-                    </div>
-                    <h3 class="product-name">MIEL PURA</h3>
-                    <p class="product-price">$120</p>
-                    <button class="btn-edit-product" data-id="5">EDITAR</button>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="/images/productosmiel" alt="Miel Pura">
-                    </div>
-                    <h3 class="product-name">MIEL PURA</h3>
-                    <p class="product-price">$120</p>
-                    <button class="btn-edit-product" data-id="6">EDITAR</button>
-                </div>
+                <!-- Los productos se cargarán dinámicamente aquí -->
             </div>
 
-       
             <div class="add-product-container">
                 <button class="btn-add-products" id="btnAddProducts">AÑADIR PRODUCTOS</button>
             </div>
         </div>
     </section>
 
-   
     <section class="reviews-section">
         <h2 class="section-title">CLIENTES FELICES</h2>
         
         <div class="reviews-grid">
-         
             <div class="review-card">
                 <div class="review-header">
                     <div class="review-avatar">
@@ -192,164 +136,161 @@
             <button class="btn-view-reviews">VER TODAS LAS RESEÑAS</button>
         </div>
     </section>
-<div class="modal-overlay" id="addProductModal">
-    <div class="modal-container-add">
-        <div class="modal-header-add">
-            <button class="btn-back-modal" onclick="closeAddModal()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-            </button>
-        </div>
 
-        <form class="product-form-add" id="addProductForm">
-            <div class="image-upload-area">
-                <div class="image-preview-large" id="addImagePreview">
-                    <svg width="120" height="120" viewBox="0 0 100 100" fill="none">
-                        <rect x="10" y="15" width="70" height="60" rx="5" stroke="#F9BD31" stroke-width="4"/>
-                        <circle cx="30" cy="32" r="6" fill="#F9BD31"/>
-                        <path d="M10 60 L35 40 L55 55 L70 45 L80 52" stroke="#F9BD31" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M65 55 L75 45 L85 52 L85 68" stroke="#F9BD31" stroke-width="4" stroke-linecap="round"/>
-                        <g transform="translate(55, 50)">
-                            <circle cx="15" cy="15" r="15" fill="#F9BD31"/>
-                            <path d="M15 8 L15 22 M8 15 L22 15" stroke="white" stroke-width="3" stroke-linecap="round"/>
-                        </g>
+    <!-- MODAL AGREGAR PRODUCTO -->
+    <div class="modal-overlay" id="addProductModal">
+        <div class="modal-container-add">
+            <div class="modal-header-add">
+                <button class="btn-back-modal" onclick="closeAddModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
-                </div>
-                <input type="file" id="addProductImage" accept="image/*" style="display: none;">
+                </button>
             </div>
 
-            <div class="form-fields-compact">
-                <div class="form-group-compact">
-                    <input 
-                        type="text" 
-                        id="addProductName" 
-                        placeholder="Nombre del producto" 
-                        class="input-compact"
-                        required
-                    >
+            <form class="product-form-add" id="addProductForm">
+                <div class="image-upload-area">
+                    <div class="image-preview-large" id="addImagePreview">
+                        <svg width="120" height="120" viewBox="0 0 100 100" fill="none">
+                            <rect x="10" y="15" width="70" height="60" rx="5" stroke="#F9BD31" stroke-width="4"/>
+                            <circle cx="30" cy="32" r="6" fill="#F9BD31"/>
+                            <path d="M10 60 L35 40 L55 55 L70 45 L80 52" stroke="#F9BD31" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M65 55 L75 45 L85 52 L85 68" stroke="#F9BD31" stroke-width="4" stroke-linecap="round"/>
+                            <g transform="translate(55, 50)">
+                                <circle cx="15" cy="15" r="15" fill="#F9BD31"/>
+                                <path d="M15 8 L15 22 M8 15 L22 15" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
                 </div>
 
-                <div class="form-group-compact">
-                    <input 
-                        type="number" 
-                        id="addProductPrice" 
-                        placeholder="Precio" 
-                        class="input-compact"
-                        step="0.01"
-                        required
-                    >
+                <div class="form-fields-compact">
+                    <div class="form-group-compact">
+                        <input 
+                            type="text" 
+                            id="addProductName" 
+                            placeholder="Nombre del producto" 
+                            class="input-compact"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group-compact">
+                        <input 
+                            type="number" 
+                            id="addProductPrice" 
+                            placeholder="Precio" 
+                            class="input-compact"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group-compact">
+                        <input 
+                            type="number" 
+                            id="addProductQuantity" 
+                            placeholder="Cantidad" 
+                            class="input-compact"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group-compact">
+                        <textarea 
+                            id="addProductDescription" 
+                            placeholder="Descripción del producto" 
+                            class="input-compact textarea-compact"
+                            rows="3"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="stock-display">
+                        <span id="stockCount">0</span>
+                    </div>
                 </div>
 
-                <div class="form-group-compact">
-                    <input 
-                        type="number" 
-                        id="addProductQuantity" 
-                        placeholder="Cantidad" 
-                        class="input-compact"
-                        required
-                    >
-                </div>
-
-                <div class="form-group-compact">
-                    <textarea 
-                        id="addProductDescription" 
-                        placeholder="Descripción del producto" 
-                        class="input-compact textarea-compact"
-                        rows="3"
-                        required
-                    ></textarea>
-                </div>
-
-                <div class="stock-display">
-                    <span id="stockCount">0</span>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-add-product-submit">AGREGAR PRODUCTO</button>
-        </form>
-    </div>
-</div>
-
-<div class="modal-overlay" id="editProductModal">
-    <div class="modal-container-add">
-        <div class="modal-header-add">
-            <button class="btn-back-modal" onclick="closeEditModal()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-            </button>
+                <button type="submit" class="btn-add-product-submit">AGREGAR PRODUCTO</button>
+            </form>
         </div>
-
-        <form class="product-form-add" id="editProductForm">
-            <div class="image-upload-area">
-                <div class="image-preview-large has-image" id="editImagePreview">
-                    <img src="/images/productosmiel" alt="Producto">
-                </div>
-                <input type="file" id="editProductImage" accept="image/*" style="display: none;">
-            </div>
-
-            <div class="form-fields-compact">
-                <div class="form-group-compact">
-                    <input 
-                        type="text" 
-                        id="editProductName" 
-                        value="MIEL PURA"
-                        placeholder="Nombre del producto" 
-                        class="input-compact"
-                        required
-                    >
-                </div>
-
-                <div class="form-group-compact">
-                    <input 
-                        type="number" 
-                        id="editProductPrice" 
-                        value="120"
-                        placeholder="Precio" 
-                        class="input-compact"
-                        step="0.01"
-                        required
-                    >
-                </div>
-
-                <div class="form-group-compact">
-                    <input 
-                        type="number" 
-                        id="editProductQuantity" 
-                        value="50"
-                        placeholder="Cantidad" 
-                        class="input-compact"
-                        required
-                    >
-                </div>
-
-                <div class="form-group-compact">
-                    <textarea 
-                        id="editProductDescription" 
-                        placeholder="Descripción del producto" 
-                        class="input-compact textarea-compact"
-                        rows="3"
-                        required
-                    >Ingrese aquí para ver la variedad de productos que tenemos para ofrecerles</textarea>
-                </div>
-
-                <div class="stock-display">
-                    <span id="editStockCount">50</span>
-                </div>
-            </div>
-
-            <div class="edit-actions">
-                <button type="button" class="btn-delete-product" onclick="deleteProduct()">
-                    ELIMINAR PRODUCTO
-                </button>
-                <button type="submit" class="btn-add-product-submit">
-                    GUARDAR
-                </button>
-            </div>
-        </form>
     </div>
-</div>
+
+    <div class="modal-overlay" id="editProductModal">
+        <div class="modal-container-add">
+            <div class="modal-header-add">
+                <button class="btn-back-modal" onclick="closeEditModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <form class="product-form-add" id="editProductForm">
+                <div class="image-upload-area">
+                    <div class="image-preview-large has-image" id="editImagePreview">
+                        <img src="/images/productosmiel" alt="Producto">
+                    </div>
+                </div>
+
+                <div class="form-fields-compact">
+                    <div class="form-group-compact">
+                        <input 
+                            type="text" 
+                            id="editProductName" 
+                            placeholder="Nombre del producto" 
+                            class="input-compact"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group-compact">
+                        <input 
+                            type="number" 
+                            id="editProductPrice" 
+                            placeholder="Precio" 
+                            class="input-compact"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group-compact">
+                        <input 
+                            type="number" 
+                            id="editProductQuantity" 
+                            placeholder="Cantidad" 
+                            class="input-compact"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group-compact">
+                        <textarea 
+                            id="editProductDescription" 
+                            placeholder="Descripción del producto" 
+                            class="input-compact textarea-compact"
+                            rows="3"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="stock-display">
+                        <span id="editStockCount">0</span>
+                    </div>
+                </div>
+
+                <div class="edit-actions">
+                    <button type="button" class="btn-delete-product" onclick="deleteProduct()">
+                        ELIMINAR PRODUCTO
+                    </button>
+                    <button type="submit" class="btn-add-product-submit">
+                        GUARDAR
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="footer-content">
@@ -358,8 +299,8 @@
             </div>
             <p class="footer-text">&copy; 2024 Miel de la Selva Maya. Todos los derechos reservados.</p>
         </div>
-        
     </footer>
-    <script src="/js/admin-products.js"></script>
+
+    <script type="module" src="/js/admin-products.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-// common/api/auth-service.js
+// services/auth-service.js
 const API_BASE_URL = 'http://localhost:7000/api';
 
 class AuthService {
@@ -13,7 +13,7 @@ class AuthService {
                     nombre: userData.nombre,
                     correo: userData.correo,
                     contrasenia: userData.contrasenia,
-                    celular: userData.celular || '' // Campo opcional
+                    celular: userData.celular || ''
                 })
             });
 
@@ -55,7 +55,9 @@ class AuthService {
             const data = await response.json();
 
             if (response.ok) {
+                // ✅ CORREGIDO: Guardar el usuario completo
                 localStorage.setItem('usuario', JSON.stringify(data));
+                localStorage.setItem('userData', JSON.stringify(data)); // Backup
                 return {
                     success: true,
                     data: data,
@@ -78,16 +80,27 @@ class AuthService {
 
     logout() {
         localStorage.removeItem('usuario');
+        localStorage.removeItem('userData');
         window.location.href = '/html/login.html';
     }
 
     getCurrentUser() {
-        const userData = localStorage.getItem('usuario');
+        // ✅ CORREGIDO: Buscar en ambas ubicaciones
+        const userData = localStorage.getItem('usuario') || localStorage.getItem('userData');
         return userData ? JSON.parse(userData) : null;
     }
 
     isAuthenticated() {
         return this.getCurrentUser() !== null;
+    }
+
+    // ✅ NUEVO MÉTODO: Obtener ID del usuario de forma segura
+    getUserId() {
+        const user = this.getCurrentUser();
+        if (!user) return null;
+        
+        // Buscar el ID en diferentes propiedades posibles
+        return user.idUsuario || user.id_user || user.id || null;
     }
 }
 

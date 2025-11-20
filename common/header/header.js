@@ -1,6 +1,5 @@
 // common/header/header.js - Actualizar con integración de logout
-
-import authService from '../api/auth-service.js';
+import authService from '../../services/auth-service.js';
 
 export function getUserSidebarHTML() {
     return `

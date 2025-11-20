@@ -8,7 +8,15 @@ class APIClient {
 
     // Método genérico para hacer peticiones
     async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
+        // ✅ AGREGADO: Debug de URL
+        let fixedEndpoint = endpoint;
+        if (!fixedEndpoint.startsWith('/')) {
+            fixedEndpoint = '/' + fixedEndpoint;
+        }
+        const url = `${this.baseURL}${fixedEndpoint}`;
+        
+        console.log('🔍 API Call:', url, options.method || 'GET');
+        console.log('📦 Request Body:', options.body); // ✅ AGREGADO
         
         const config = {
             ...options,
@@ -26,20 +34,23 @@ class APIClient {
         try {
             const response = await fetch(url, config);
             
+            console.log('📡 Response Status:', response.status); // ✅ AGREGADO
+            
             // Manejar respuestas sin contenido (204)
             if (response.status === 204) {
                 return { success: true };
             }
 
             const data = await response.json();
+            console.log('📨 Response Data:', data); // ✅ AGREGADO
 
             if (!response.ok) {
-                throw new Error(data.message || `Error: ${response.status}`);
+                throw new Error(data.error || data.message || `Error: ${response.status}`);
             }
 
             return data;
         } catch (error) {
-            console.error('API Error:', error);
+            console.error('❌ API Error:', error);
             throw error;
         }
     }
