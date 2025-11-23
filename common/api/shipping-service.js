@@ -22,8 +22,6 @@ class ShippingService {
 
             if (!userId) throw new Error("Usuario no identificado");
 
-            // --- AQUÍ SE ARMA EL OBJETO PARA JAVA ---
-            // Java debe tener una clase con: idUsuario, calle, colonia, codigoPostal, ciudad, estado
             const shipment = await apiClient.post('/api/shipping-address', {
                 idUsuario: userId,
                 calle: data.calle,

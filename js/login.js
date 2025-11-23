@@ -6,20 +6,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleButton = document.getElementById('toggleButton');
     const loginForm = document.querySelector('.login-form');
 
-    // Toggle password visibility
     toggleButton.addEventListener('click', function() {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
     });
 
-    // Handle login form submission
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         const correo = document.getElementById('correo').value;
         const password = document.getElementById('password').value;
 
-        // Mostrar loading
         const btnEntrar = loginForm.querySelector('.btn-entrar');
         const originalText = btnEntrar.textContent;
         btnEntrar.textContent = 'CARGANDO...';
@@ -35,19 +32,16 @@ document.addEventListener('DOMContentLoaded', function() {
 if (result.success) {
     showNotification('¡Bienvenido!', 'success');
     
-    // Redirigir según el rol
     setTimeout(() => {
         const usuario = authService.getCurrentUser();
-        const rol = usuario.rol; // "ADMIN" o "USER"
-        
+        const rol = usuario.rol; 
         if (rol === "ADMIN") {
-            window.location.href = '/html/admin-products.html';  // Vista admin
+            window.location.href = '/html/admin-products.html';  
         } else {
-            window.location.href = '/index.html';  // Vista cliente
+            window.location.href = '/index.html';  
         }
     }, 1000);
 } else {
-                // Error en loginhtml
                 showNotification(result.error || 'Credenciales incorrectas', 'error');
                 btnEntrar.textContent = originalText;
                 btnEntrar.disabled = false;

@@ -2,7 +2,6 @@ import paymentService from '../common/api/payment-service.js';
 import authService from '../services/auth-service.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Verificar autenticación
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión');
         window.location.href = '/html/login.html';
@@ -12,7 +11,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const paymentMethodsContainer = document.getElementById('paymentMethods');
     if (!paymentMethodsContainer) return;
 
-    // Cargar métodos de pago del usuario
     try {
         const result = await paymentService.getAllPaymentMethods();
         let paymentsArr = [];
@@ -42,10 +40,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         paymentMethodsContainer.innerHTML = '<p class="empty-msg">Error al cargar métodos de pago.</p>';
     }
 
-    // Botón para agregar nuevo método de pago
     let btnAddPayment = document.getElementById('btnAddPayment');
     if (!btnAddPayment) {
-        // Si no existe, lo agregamos al final del contenedor
         btnAddPayment = document.createElement('button');
         btnAddPayment.className = 'btn-add-payment';
         btnAddPayment.id = 'btnAddPayment';

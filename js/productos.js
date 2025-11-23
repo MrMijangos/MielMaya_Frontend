@@ -41,7 +41,6 @@ class ShoppingCart {
         this.closeCartBtn?.addEventListener('click', () => this.closeCart());
         this.cartOverlay?.addEventListener('click', () => this.closeCart());
 
-        // Delegación de eventos global para agregar al carrito
         document.body.addEventListener('click', (e) => {
             if (e.target.classList.contains('btn-add-cart')) {
                 this.addToCart(e);
@@ -113,12 +112,10 @@ class ShoppingCart {
     }
 
     async updateQuantity(productId, newQuantity) {
-        // Buscar la cantidad actual en el array local
         const item = this.items.find(i => i.productId === productId);
         const currentQuantity = item ? item.quantity : 0;
 
         try {
-            // Pasamos cantidad nueva y actual para calcular diferencia
             const result = await cartService.updateCartItem(productId, newQuantity, currentQuantity);
             if (result.success) {
                 await this.loadCart();
@@ -240,7 +237,6 @@ class ShoppingCart {
     }
 }
 
-// --- FUNCIÓN MODIFICADA: CARGAR SOLO 3 PRODUCTOS ---
 async function loadAllProducts() {
     const productsGrid = document.querySelector('.products-grid');
     if (!productsGrid) return;
@@ -248,7 +244,6 @@ async function loadAllProducts() {
     try {
         const result = await productService.getAllProducts();
         if (result.success && result.data.length > 0) {
-            // ✅ SOLO TOMAR LOS PRIMEROS 3 PRODUCTOS
             const limitedProducts = result.data;
             
             productsGrid.innerHTML = limitedProducts.map(product => {

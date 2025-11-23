@@ -5,7 +5,6 @@ import authService from '../../services/auth-service.js';
 class ReviewService {
     async addReview(reviewData) {
         try {
-            // Obtener el ID del usuario actual
             const user = authService.getCurrentUser();
             if (!user) {
                 throw new Error('Usuario no autenticado');
@@ -18,9 +17,8 @@ class ReviewService {
                 comentario: reviewData.comentario
             };
 
-            console.log('📤 Enviando reseña:', reviewWithUser);
+            console.log('Enviando reseña:', reviewWithUser);
             
-            // Usar el helper .post para enviar JSON correctamente
             const response = await APIClient.post('/api/comments', reviewWithUser);
             return response;
         } catch (error) {
@@ -31,22 +29,18 @@ class ReviewService {
 
     async getMyReviews() {
         try {
-            // Como no tienes endpoint para "mis reseñas", simulamos obteniendo todas
-            // y filtrando por el usuario actual (esto es temporal)
+          
             const user = authService.getCurrentUser();
             if (!user) {
                 return { success: false, error: 'Usuario no autenticado' };
             }
 
-            // Obtener todos los productos primero para mostrar nombres
             const productsResponse = await APIClient.get('/api/products');
             const products = productsResponse.success ? productsResponse.data : [];
 
-            // Obtener todas las reseñas (esto no es óptimo, idealmente tendrías un endpoint para mis reseñas)
             const allReviews = [];
             
-            // Para cada producto, obtener sus reseñas y filtrar por usuario
-            for (const product of products.slice(0, 10)) { // Limitar a 10 productos por performance
+            for (const product of products.slice(0, 10)) { 
                 try {
                     const productId = product.idProducto || product.ID_Producto || product.id;
                     const reviewsResponse = await APIClient.get(`/api/comments/${productId}`);
@@ -77,7 +71,6 @@ class ReviewService {
 
     async deleteReview(reviewId) {
         try {
-            // Nota: Necesitarías agregar un endpoint DELETE en tu backend
             console.log('Eliminar reseña no implementado - ID:', reviewId);
             return { success: false, error: 'Funcionalidad no implementada en el backend' };
         } catch (error) {

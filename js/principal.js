@@ -42,7 +42,6 @@ class ShoppingCart {
         this.closeCartBtn?.addEventListener('click', () => this.closeCart());
         this.cartOverlay?.addEventListener('click', () => this.closeCart());
 
-        // Delegación de eventos global para agregar al carrito
         document.body.addEventListener('click', (e) => {
             if (e.target.classList.contains('btn-add-cart')) {
                 this.addToCart(e);
@@ -114,12 +113,10 @@ class ShoppingCart {
     }
 
     async updateQuantity(productId, newQuantity) {
-        // Buscar la cantidad actual en el array local
         const item = this.items.find(i => i.productId === productId);
         const currentQuantity = item ? item.quantity : 0;
 
         try {
-            // Pasamos cantidad nueva y actual para calcular diferencia
             const result = await cartService.updateCartItem(productId, newQuantity, currentQuantity);
             if (result.success) {
                 await this.loadCart();
@@ -208,7 +205,6 @@ class ShoppingCart {
                 const isPlus = e.target.classList.contains('plus');
                 
                 if (!isPlus && qty <= 1) {
-                     // Buscar ID Detalle para borrar
                      const cartItem = e.target.closest('.cart-item');
                      const removeId = parseInt(cartItem.querySelector('.cart-item-remove').dataset.cartId);
                      if(confirm('¿Eliminar?')) this.removeFromCart(removeId);
@@ -218,7 +214,6 @@ class ShoppingCart {
             });
         });
 
-        // Botón Eliminar
         this.cartItemsContainer.querySelectorAll('.cart-item-remove').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = parseInt(e.target.dataset.cartId);
@@ -241,7 +236,6 @@ class ShoppingCart {
     }
 }
 
-// --- FUNCIÓN MODIFICADA: CARGAR SOLO 3 PRODUCTOS ---
 async function loadAllProducts() {
     const productsGrid = document.querySelector('.products-grid');
     if (!productsGrid) return;
@@ -249,11 +243,9 @@ async function loadAllProducts() {
     try {
         const result = await productService.getAllProducts();
         if (result.success && result.data.length > 0) {
-            // ✅ SOLO TOMAR LOS PRIMEROS 3 PRODUCTOS
             const limitedProducts = result.data.slice(0, 3);
             
             productsGrid.innerHTML = limitedProducts.map(product => {
-                // DETECCIÓN DE ID BLINDADA
                 const id = product.idProducto || product.id_producto || product.ID_Producto || product.id;
                 const imgSrc = product.imagen || product.imagen_base64 || DEFAULT_IMAGE;
                 
@@ -279,7 +271,6 @@ async function loadAllProducts() {
     }
 }
 
-// --- FUNCIÓN PARA MANEJAR EL BOTÓN DE RESEÑAS ---
 function setupReviewButton() {
     const addReviewBtn = document.querySelector('.btn-add-review');
     
@@ -293,18 +284,15 @@ function setupReviewButton() {
                 return;
             }
             
-            // Redirigir a la página de agregar reseña
             window.location.href = '/html/agregar-resena.html';
         });
     }
 }
 
-// --- FUNCIÓN PARA CARGAR Y MOSTRAR RESEÑAS DEL BACKEND ---
 async function loadReviews() {
     const reviewsGrid = document.querySelector('.reviews-grid');
     if (!reviewsGrid) return;
 
-    // Obtener los productos populares (los 3 primeros)
     let products = [];
     try {
         const result = await productService.getAllProducts();
@@ -315,7 +303,6 @@ async function loadReviews() {
         console.error('Error obteniendo productos para reseñas:', error);
     }
 
-    // Obtener reseñas de cada producto
     let allReviews = [];
     for (const product of products) {
         const productId = product.idProducto || product.id_producto || product.ID_Producto || product.id;
@@ -327,7 +314,6 @@ async function loadReviews() {
             } else if (res && Array.isArray(res.data)) {
                 reviewsArr = res.data;
             }
-            // Añadir nombre del producto a cada reseña
             reviewsArr.forEach(r => r.nombreProducto = product.nombre);
             allReviews.push(...reviewsArr);
         } catch (error) {
@@ -335,23 +321,19 @@ async function loadReviews() {
         }
     }
 
-    // Mostrar máximo 6 reseñas
     const limitedReviews = allReviews.slice(0, 6);
     if (limitedReviews.length === 0) {
         reviewsGrid.innerHTML = '<p class="empty-msg">No hay reseñas disponibles.</p>';
         return;
     }
 
-    // Helper para fecha legible
     function formatDate(fecha) {
         if (!fecha) return '';
-        // Si es UNIX, convertir; si es string tipo 'YYYY-MM-DD HH:mm:ss', parsear
         if (typeof fecha === 'number') {
             const d = new Date(fecha * 1000);
             return d.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
         }
         if (typeof fecha === 'string') {
-            // '2025-11-20 05:30:13' => Date
             const parts = fecha.split(' ');
             if (parts.length === 2) {
                 const [datePart, timePart] = parts;
@@ -365,7 +347,6 @@ async function loadReviews() {
     }
 
     reviewsGrid.innerHTML = limitedReviews.map(review => {
-        // Usar los campos exactos del backend
         const nombre = `Usuario #${review.idUsuario || ''}`;
         const comentario = review.comentario || '';
         const calificacion = review.calificacion || '';
@@ -392,30 +373,23 @@ async function loadReviews() {
     }).join('');
 }
 
-// --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Auth y UI de usuario
     if (authService.isAuthenticated()) {
         const user = authService.getCurrentUser();
-        // Si el usuario es admin (rol 2 o 'admin'), redirigir a admin-products.html
         if (user && (user.rol === 2 || user.rol === 'admin')) {
             window.location.href = '/html/admin-products.html';
             return;
         }
         await authService.getCurrentUser();
-        initUserSidebar(); // Inicializar sidebar si logueado
+        initUserSidebar(); 
     }
 
-    // 2. Cargar productos en el grid (SOLO 3)
     await loadAllProducts();
 
-    // 2b. Cargar reseñas en la sección CLIENTES FELICES
     await loadReviews();
 
-    // 3. Inicializar carrito
     window.cart = new ShoppingCart();
     
-    // 4. Configurar botón de checkout
     document.querySelector('.btn-checkout')?.addEventListener('click', () => {
         if (window.cart && window.cart.items.length > 0) {
             window.location.href = '/html/checkout.html';
@@ -424,6 +398,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // 5. Configurar botón de agregar reseña
     setupReviewButton();
 });

@@ -2,21 +2,20 @@
 
 class APIClient {
     constructor() {
-        this.baseURL = 'http://54.152.16.222:7000';
+        this.baseURL = 'http://localhost:7000';
         this.token = localStorage.getItem('authToken');
     }
 
     // Método genérico para hacer peticiones
     async request(endpoint, options = {}) {
-        // ✅ AGREGADO: Debug de URL
         let fixedEndpoint = endpoint;
         if (!fixedEndpoint.startsWith('/')) {
             fixedEndpoint = '/' + fixedEndpoint;
         }
         const url = `${this.baseURL}${fixedEndpoint}`;
         
-        console.log('🔍 API Call:', url, options.method || 'POST');
-        console.log('📦 Request Body:', options.body); // ✅ AGREGADO
+        console.log(' API Call:', url, options.method || 'POST');
+        console.log(' Request Body:', options.body); 
         
         const config = {
             ...options,
@@ -26,7 +25,6 @@ class APIClient {
             }
         };
 
-        // Agregar token si existe
         if (this.token) {
             config.headers['Authorization'] = `Bearer ${this.token}`;
         }
@@ -34,23 +32,21 @@ class APIClient {
         try {
            const response = await fetch(url, config);
             
-            console.log('📡 Response Status:', response.status); 
+            console.log(' Response Status:', response.status); 
 
             if (response.status === 204) {
                 return { success: true };
             }
 
-            // ✅ CORRECCIÓN: Intentar leer como texto primero
             const text = await response.text();
             let data;
             try {
-                data = JSON.parse(text); // Intentar parsear JSON
+                data = JSON.parse(text); 
             } catch (e) {
-                // Si falla, usar el texto como mensaje (para "Item eliminado")
                 data = { message: text };
             }
 
-            console.log('📨 Response Data:', data); 
+            console.log(' Response Data:', data); 
 
             if (!response.ok) {
                 throw new Error(data.error || data.message || `Error: ${response.status}`);
@@ -58,7 +54,7 @@ class APIClient {
 
             return data;
         } catch (error) {
-            console.error('❌ API Error:', error);
+            console.error(' API Error:', error);
             throw error;
         }
     }

@@ -78,7 +78,6 @@ export class UserSidebar {
     }
 
     async loadUserData() {
-        // Usa 'usuario' del localStorage, que es el que se usa en admin-products.js
         const userData = JSON.parse(localStorage.getItem('usuario'));
         if (userData) {
             const userName = document.getElementById('userName');
@@ -128,18 +127,15 @@ export class UserSidebar {
         e.currentTarget.classList.add('active');
         this.closeSidebar();
         
-        // Determinar si es Admin (necesario para diferenciar la redirección de 'orders')
         const userData = JSON.parse(localStorage.getItem('usuario'));
         const isAdmin = userData?.rol?.toUpperCase() === 'ADMIN';
 
         switch(section) {
             case 'orders':
-                // Redirección diferente para Admin y User
                 window.location.href = isAdmin ? '/html/admin-orders.html' : '/html/orders.html';
                 break;
             case 'reviews':
-                // Nueva opción de Admin: Ver todas las reseñas
-                window.location.href = '/html/admin-reviews.html'; // Asume una página de admin para reseñas
+                window.location.href = '/html/admin-reviews.html'; 
                 break;
             case 'payment':
                 window.location.href = '/html/mycards.html';
@@ -162,7 +158,6 @@ export class UserSidebar {
             showNotification('Sesión cerrada exitosamente');
             
             setTimeout(() => {
-                // CORREGIDO: la ruta tenía un /.html/
                 window.location.href = '/html/login.html';
             }, 1000);
         }
@@ -174,8 +169,6 @@ export function initUserSidebar() {
     return new UserSidebar();
 }
 
-// Nota: se eliminó la definición local de showNotification para usar una global,
-// o se debe asegurar que se defina. La estoy redefiniendo brevemente aquí por completitud.
 function showNotification(message) {
     const notification = document.createElement('div');
     notification.style.cssText = `

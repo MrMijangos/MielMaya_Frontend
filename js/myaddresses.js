@@ -2,7 +2,6 @@ import shippingService from '../common/api/shipping-service.js';
 import authService from '../services/auth-service.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Verificar autenticación
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión');
         window.location.href = '/html/login.html';
@@ -17,7 +16,7 @@ async function loadAddresses() {
     container.innerHTML = '';
     try {
         const result = await shippingService.getAllShipments();
-        console.log('🔍 RESPUESTA COMPLETA de direcciones:', JSON.stringify(result, null, 2));
+        console.log(' RESPUESTA COMPLETA de direcciones:', JSON.stringify(result, null, 2));
         if (result.success && Array.isArray(result.data) && result.data.length > 0) {
             const direcciones = result.data.reverse();
             direcciones.forEach((addr, index) => {
@@ -29,7 +28,6 @@ async function loadAddresses() {
             emptyMsg.innerHTML = `<p style="text-align:center; padding:20px; color: #666;">No tienes direcciones guardadas.</p>`;
             container.appendChild(emptyMsg);
         }
-        // Botón agregar dirección
         let btnAdd = document.getElementById('btnAddAddress');
         if (!btnAdd) {
             btnAdd = document.createElement('button');
@@ -45,7 +43,6 @@ async function loadAddresses() {
     } catch (error) {
         console.error("Error al cargar direcciones:", error);
         container.innerHTML = `<p style="color:red; text-align:center;">Error al cargar direcciones</p>`;
-        // Botón agregar dirección en error
         let btnAdd = document.getElementById('btnAddAddress');
         if (!btnAdd) {
             btnAdd = document.createElement('button');

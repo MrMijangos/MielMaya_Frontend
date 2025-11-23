@@ -1,17 +1,15 @@
 import authService from '../services/auth-service.js';
 
-const API_BASE_URL = 'http://54.152.16.222:7000/api';
+const API_BASE_URL = 'http://localhost:7000/api';
 const DEFAULT_IMAGE = '/images/productosmiel'; 
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Validar sesión (opcional)
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión como admin');
         window.location.href = '/html/login.html';
         return;
     }
 
-    // 2. Iniciar lógica
     setupTabs();
     await loadOrders();
 });
@@ -32,7 +30,6 @@ async function loadOrders() {
     const container = document.getElementById('shipmentsList');
     
     try {
-        // Llamada SIN parámetros para obtener JSON del admin
         const response = await fetch(`${API_BASE_URL}/orders`);
         
         if (!response.ok) throw new Error('Error al conectar con API');
@@ -45,8 +42,7 @@ async function loadOrders() {
         }
 
         renderOrders(orders);
-        filterShipments('pending'); // Filtrar pendientes por defecto
-
+        filterShipments('pending'); 
     } catch (error) {
         console.error(error);
         container.innerHTML = '<p style="color:red; text-align:center;">Error al cargar datos.</p>';
@@ -58,12 +54,10 @@ function renderOrders(orders) {
     container.innerHTML = '';
 
     orders.forEach(order => {
-        // **IMPORTANTE:** Usa el ID correcto del pedido
         const orderId = order.idPedido || order.numeroPedido; 
         
-        // Lógica de estados
         let statusClass = 'pending';
-        let nextStatus = ''; // El estado al que pasará
+        let nextStatus = ''; 
         const estadoDB = order.estado ? order.estado.toUpperCase() : 'CREADO';
 
         if (estadoDB === 'CREADO' || estadoDB === 'PENDING') {
@@ -76,7 +70,6 @@ function renderOrders(orders) {
             statusClass = 'delivered';
         }
 
-        // Botón de acción dinámico
         let actionHtml = '';
         if (statusClass === 'pending') {
             actionHtml = `<button 
@@ -127,7 +120,6 @@ function renderOrders(orders) {
         container.appendChild(div);
     });
     
-    // **IMPORTANTE**: Exponer la función al scope global para que los onclick la vean
     window.updateOrderStatus = updateOrderStatus;
 }
 
@@ -139,29 +131,25 @@ async function updateOrderStatus(orderId, newStatus) {
 
     try {
         const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
-            method: 'PUT', // Usamos PUT para actualizar
+            method: 'PUT', 
             headers: {
                 'Content-Type': 'application/json',
-                // Si usas tokens de autenticación, añádelos aquí
             },
             body: JSON.stringify({ estado: newStatus })
         });
 
         if (!response.ok) {
-            // Intenta leer el cuerpo del error si es JSON
             let errorMessage = response.statusText;
             try {
                 const errorData = await response.json();
                 errorMessage = errorData.message || errorMessage;
             } catch (e) {
-                // No es JSON, usa el statusText
             }
             throw new Error(`Error al actualizar estado: ${errorMessage}`);
         }
 
         alert(`Estado del Pedido #${orderId} actualizado a ${newStatus} correctamente.`);
         
-        // Recargar pedidos para que la lista se refresque y el pedido se mueva de pestaña
         await loadOrders(); 
 
     } catch (error) {

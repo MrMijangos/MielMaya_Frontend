@@ -155,7 +155,7 @@ class ReviewAdmin {
     }
 }
 
-// Inicialización
+
 document.addEventListener('DOMContentLoaded', () => {
     window.reviewAdmin = new ReviewAdmin();
 });

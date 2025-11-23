@@ -10,7 +10,6 @@ class ReviewManager {
     }
 
     init() {
-        // Verificar autenticación
         if (!authService.isAuthenticated()) {
             this.showNotification('Debes iniciar sesión para agregar una reseña', 'error');
             setTimeout(() => {
@@ -52,19 +51,16 @@ class ReviewManager {
     }
 
     setupEventListeners() {
-        // Estrellas de calificación
         document.querySelectorAll('.star').forEach(star => {
             star.addEventListener('click', (e) => {
                 this.setRating(parseInt(e.target.dataset.rating));
             });
         });
 
-        // Selección de producto
         document.getElementById('productSelect').addEventListener('change', (e) => {
             this.selectProduct(e.target);
         });
 
-        // Envío del formulario
         document.getElementById('reviewForm').addEventListener('submit', (e) => {
             e.preventDefault();
             this.submitReview();
@@ -75,7 +71,6 @@ class ReviewManager {
         this.selectedRating = rating;
         document.getElementById('ratingValue').value = rating;
         
-        // Actualizar estrellas visualmente
         document.querySelectorAll('.star').forEach((star, index) => {
             if (index < rating) {
                 star.classList.add('active');
@@ -100,26 +95,19 @@ class ReviewManager {
         if (this.selectedProduct) {
             const imgElement = document.getElementById('productImage');
             
-            // Primero limpiamos cualquier error previo
             imgElement.onerror = null; 
 
-            // Definimos qué hacer si falla
             imgElement.onerror = () => {
-                // ¡IMPORTANTE! Esto evita el bucle infinito:
                 imgElement.onerror = null; 
                 
-                // Opción A: Intentar cargar la imagen por defecto UNA VEZ
                 imgElement.src = '/images/productosmiel';
 
-                // Opción B (Si tampoco quieres que busque la de 'productosmiel.png'):
-                // imgElement.src = 'https://via.placeholder.com/150?text=Sin+Imagen';
+             
             };
             
-            // Intentamos cargar la imagen original
             imgElement.src = this.selectedProduct.imagen || '/images/productosmiel';
             
             document.getElementById('productName').textContent = this.selectedProduct.nombre;
-            // Nota: Corregí las comillas invertidas aquí que faltaban en tu código original
             document.getElementById('productPrice').textContent = 
                 `$${Number(this.selectedProduct.precio).toFixed(2)}`;
         }

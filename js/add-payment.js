@@ -1,21 +1,18 @@
 import paymentService from '../common/api/payment-service.js';
-import authService from '../services/auth-service.js'; // Ruta corregida según tu 'tree'
+import authService from '../services/auth-service.js'; 
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Script cargado correctamente"); // Para depurar
+    console.log("Script cargado correctamente");
 
-    // 1. Verificar autenticación
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión');
         window.location.href = '/html/login.html';
         return;
     }
 
-    // 2. Cargar funciones visuales
     loadCartTotal();
     setupCardFormatting();
     
-    // 3. Configurar el botón
     const btnAddCard = document.getElementById('btnAddCard');
     
     if (!btnAddCard) {
@@ -29,20 +26,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const form = document.getElementById('paymentForm');
         
-        // Validación HTML básica
         if (!form.checkValidity()) {
             alert('Por favor completa todos los campos requeridos');
             form.reportValidity();
             return;
         }
 
-        // Obtener valores limpios
         const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
         const cardMonth = document.getElementById('cardMonth').value;
         const cardCVV = document.getElementById('cardCVV').value;
         const cardName = document.getElementById('cardName').value;
 
-        // Validaciones Lógicas
         if (!validateCardNumber(cardNumber)) {
             showNotification('Número de tarjeta inválido (Luhn Check)', 'error');
             return;
@@ -52,13 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Efecto de carga
         const originalText = btnAddCard.textContent;
         btnAddCard.textContent = 'GUARDANDO...';
         btnAddCard.disabled = true;
 
         try {
-            // Llamada al servicio
             console.log("Enviando datos...");
             const result = await paymentService.addPaymentMethod({
                 nombre_tarjeta: cardName,
@@ -70,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.success) {
                 showNotification('Tarjeta guardada exitosamente', 'success');
                 setTimeout(() => {
-                    // Regresar al checkout
                     window.location.href = '../html/checkout.html';
                 }, 1500);
             } else {
@@ -85,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// --- FUNCIONES AUXILIARES ---
 
 function loadCartTotal() {
     const total = localStorage.getItem('cartTotal') || '0.00';
@@ -96,7 +86,6 @@ function loadCartTotal() {
 }
 
 function setupCardFormatting() {
-    // Formateo Número Tarjeta (espacios cada 4)
     const cardNumber = document.getElementById('cardNumber');
     cardNumber?.addEventListener('input', (e) => {
         let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
@@ -104,7 +93,6 @@ function setupCardFormatting() {
         e.target.value = value.substring(0, 19);
     });
     
-    // Formateo Fecha (MM/AA)
     const cardMonth = document.getElementById('cardMonth');
     cardMonth?.addEventListener('input', (e) => {
         let value = e.target.value.replace(/\D/g, '');
@@ -114,13 +102,11 @@ function setupCardFormatting() {
         e.target.value = value;
     });
     
-    // Solo números en CVV
     const cardCVV = document.getElementById('cardCVV');
     cardCVV?.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/\D/g, '');
     });
     
-    // Solo letras en nombre
     const cardName = document.getElementById('cardName');
     cardName?.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
@@ -128,7 +114,6 @@ function setupCardFormatting() {
 }
 
 function validateCardNumber(cardNumber) {
-    // Algoritmo de Luhn simple
     if (!/^\d{13,19}$/.test(cardNumber)) return false;
     let sum = 0;
     let isEven = false;

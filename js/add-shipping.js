@@ -29,14 +29,12 @@ async function handleSaveAddress(e) {
         return;
     }
 
-    // --- OBTENER DATOS EXACTOS PARA TU SQL ---
-    const street = document.getElementById('shippingStreet').value; // Calle
-    const colony = document.getElementById('shippingColony').value; // Colonia
-    const city = document.getElementById('shippingCity').value;     // Ciudad
-    const state = document.getElementById('shippingState').value;   // Estado
-    const zip = document.getElementById('shippingZip').value;       // CP
+    const street = document.getElementById('shippingStreet').value;
+    const colony = document.getElementById('shippingColony').value; 
+    const city = document.getElementById('shippingCity').value;     
+    const state = document.getElementById('shippingState').value;   
+    const zip = document.getElementById('shippingZip').value;       
 
-    // UI Loading
     const originalText = btnAdd.textContent;
     btnAdd.textContent = 'GUARDANDO...';
     btnAdd.disabled = true;
@@ -68,7 +66,6 @@ async function handleSaveAddress(e) {
 }
 
 function setupInputFormatting() {
-    // Solo números para el CP y Teléfono
     ['shippingZip', 'shippingPhone'].forEach(id => {
         document.getElementById(id)?.addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/\D/g, '');

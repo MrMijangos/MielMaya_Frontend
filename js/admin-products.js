@@ -1,10 +1,8 @@
 // js/admin-products.js - VERSIÓN FINAL
 let currentProductId = null;
-const API_BASE_URL = 'http://54.152.16.222:7000/api';
+const API_BASE_URL = 'http://localhost:7000/api';
 
-// ***********************
-// ***** SERVICE API *****
-// ***********************
+
 const productService = {
     async getAllProducts() {
         try {
@@ -85,9 +83,6 @@ const productService = {
     }
 };
 
-// ************************
-// ***** RENDER/CARGA *****
-// ************************
 
 async function loadProducts() {
     const productsGrid = document.querySelector('.products-grid');
@@ -134,9 +129,7 @@ async function loadProducts() {
     }
 }
 
-// *******************
-// ***** MODALES *****
-// *******************
+
 
 async function openEditModal(productId) {
     const modal = document.getElementById('editProductModal');
@@ -157,8 +150,7 @@ async function openEditModal(productId) {
             document.getElementById('editProductDescription').value = product.descripcion || '';
             document.getElementById('editStockCount').textContent = product.stock !== undefined ? product.stock : (product.Stock || '0');
             
-            // Mostrar imagen actual (el preview ya no está en el HTML, pero mantenemos la lógica)
-            // Lógica de preview de imagen (si se añade el elemento)
+            
         }
     } catch (error) {
         console.error('Error al cargar producto:', error);
@@ -179,7 +171,6 @@ window.closeAddModal = function() {
         const stockCount = document.getElementById('stockCount');
         if(stockCount) stockCount.textContent = '0';
         
-        // Lógica de reset del preview de imagen (si se añade el elemento)
     }
 }
 
@@ -213,12 +204,29 @@ window.deleteProduct = async function() {
     }
 }
 
+window.openAddModal = function() {
+    console.log('🔘 Botón agregar producto clickeado - Abriendo modal');
+    const modal = document.getElementById('addProductModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        const form = document.getElementById('addProductForm');
+        if (form) form.reset();
+        
+        const stockCount = document.getElementById('stockCount');
+        if (stockCount) stockCount.textContent = '0';
+        
+        console.log(' Modal de agregar producto abierto correctamente');
+    } else {
+        console.error(' No se encontró el modal con id: addProductModal');
+    }
+}
+
 function previewImageAdd(event) {
-    // Lógica para previsualizar imagen (si se añade el input file)
 }
 
 function previewImageEdit(event) {
-    // Lógica para previsualizar imagen (si se añade el input file)
 }
 
 async function handleAddProduct(e) {
@@ -285,12 +293,10 @@ async function updateProductInternal(productData) {
     }
 }
 
-// **************************
-// ***** INICIALIZACIÓN *****
-// **************************
+
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('✅ admin-products.js cargado correctamente');
+    console.log(' admin-products.js cargado correctamente');
     
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión como administrador');
@@ -309,7 +315,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function setupEventListeners() {
-    // Actualización dinámica del texto de stock
     const addQuantity = document.getElementById('addProductQuantity');
     if (addQuantity) {
         addQuantity.addEventListener('input', (e) => {
@@ -335,9 +340,7 @@ function setupEventListeners() {
     }
 }
 
-// ***************************
-// ***** FUNCIONES COMUNES *****
-// ***************************
+
 
 function showNotification(message, type = 'success') {
     const existing = document.querySelector('.notification-toast');
@@ -372,7 +375,6 @@ function showNotification(message, type = 'success') {
 }
 
 const authService = {
-    // Función mock de autenticación para verificar el rol
     isAuthenticated() {
         const userData = localStorage.getItem('usuario');
         if (!userData) return false;

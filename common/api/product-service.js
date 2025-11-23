@@ -1,6 +1,6 @@
 // js/common/api/product-service.js
 
-const API_BASE_URL = 'http://54.152.16.222:7000/api';
+const API_BASE_URL = 'http://localhost:7000/api';
 
 const productService = {
     async getAllProducts() {
@@ -47,19 +47,15 @@ const productService = {
                 body: JSON.stringify(productData)
             });
 
-            // ✅ CORRECCIÓN IMPORTANTE PARA JAVA JAVALIN:
-            // Tu backend devuelve status 204 (No Content) al actualizar.
-            // Si intentamos hacer response.json() en un 204, dará error.
+          
             if (response.status === 204) {
                 return { success: true };
             }
 
-            // Si devuelve datos (por si acaso cambia el backend)
             const data = await response.json();
             return { success: response.ok, data };
 
         } catch (error) {
-            // Si el error es de parseo JSON pero el status fue ok, lo contamos como éxito
             console.error('Error actualizando producto:', error);
             return { success: false, error: 'Error de conexión' };
         }
