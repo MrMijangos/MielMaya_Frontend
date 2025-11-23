@@ -1,6 +1,5 @@
 import shippingService from '../common/api/shipping-service.js';
 import authService from '../services/auth-service.js';
-import navigationContext from '../common/utils/navigation-context.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -10,19 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const isCheckout = navigationContext.isCheckoutFlow();
-    
-    const btnAdd = document.getElementById('btnAddAddressBtn');
-    if (btnAdd) {
-        if (isCheckout) {
-            btnAdd.textContent = 'CONTINUAR CON LA COMPRA';
-        } else {
-            btnAdd.textContent = 'GUARDAR DIRECCIÓN';
-        }
-    }
-
     setupInputFormatting();
 
+    const btnAdd = document.getElementById('btnAddAddressBtn');
     if (btnAdd) {
         btnAdd.addEventListener('click', handleSaveAddress);
     }
@@ -40,12 +29,14 @@ async function handleSaveAddress(e) {
         return;
     }
 
+    // Obtener datos del formulario
     const street = document.getElementById('shippingStreet').value;
     const colony = document.getElementById('shippingColony').value;
     const city = document.getElementById('shippingCity').value;
     const state = document.getElementById('shippingState').value;
     const zip = document.getElementById('shippingZip').value;
 
+    // UI Loading
     const originalText = btnAdd.textContent;
     btnAdd.textContent = 'GUARDANDO...';
     btnAdd.disabled = true;
@@ -63,7 +54,19 @@ async function handleSaveAddress(e) {
             showNotification('Dirección guardada exitosamente', 'success');
             
             setTimeout(() => {
-                navigationContext.returnToPreviousPage();
+                // ✅ CORREGIDO: Detectar de dónde viene el usuario
+                const referrer = document.referrer;
+                const isFromCheckout = referrer.includes('shipping-address.html') || 
+                                      referrer.includes('checkout.html') ||
+                                      localStorage.getItem('isCheckoutFlow') === 'true';
+                
+                if (isFromCheckout) {
+                    // Si viene del flujo de compra, regresar al shipping
+                    window.location.href = '../html/shipping-address.html';
+                } else {
+                    // Si viene del menú de usuario, regresar a addresses.html
+                    window.location.href = '../html/addresses.html';
+                }
             }, 1500);
         } else {
             throw new Error(result.error || 'Error al guardar');
@@ -78,6 +81,7 @@ async function handleSaveAddress(e) {
 }
 
 function setupInputFormatting() {
+    // Solo números para el CP y Teléfono
     ['shippingZip', 'shippingPhone'].forEach(id => {
         document.getElementById(id)?.addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/\D/g, '');

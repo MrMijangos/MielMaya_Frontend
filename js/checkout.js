@@ -1,39 +1,32 @@
-// js/checkout.js - VERSIÓN CORREGIDA
 import paymentService from '../common/api/payment-service.js';
 import authService from '../services/auth-service.js';
 import navigationContext from '../common/utils/navigation-context.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     
-    // ✅ ESTABLECER CONTEXTO: Estamos en flujo de checkout
     navigationContext.setContext(
         navigationContext.CONTEXTS.CHECKOUT, 
         '/html/checkout.html'
     );
 
-    // 1. Verificar Autenticación
     if (!authService.isAuthenticated()) {
         alert("Por favor inicia sesión para ver tus métodos de pago");
         window.location.href = '/html/login.html';
         return;
     }
 
-    // 2. Configurar botón de "Agregar Nuevo"
     const btnAdd = document.getElementById('btnAddPayment');
     if (btnAdd) {
         btnAdd.addEventListener('click', () => {
-            // ✅ Mantener el contexto antes de navegar
             window.location.href = '../html/add-payment.html';
         });
     }
 
-    // 3. Configurar botón de "Continuar/Guardar"
     const btnProceed = document.getElementById('btnProceed');
     if (btnProceed) {
         btnProceed.addEventListener('click', handleProceed);
     }
 
-    // 4. Cargar las tarjetas
     await loadPaymentMethods();
 });
 
@@ -81,9 +74,6 @@ function createCardHTML(card, isFirst) {
             </div>
         </div>
     `;
-
-    // ✅ NO incluir botón de eliminar en flujo de checkout
-    // El botón solo debe aparecer en mycards.html
 
     div.addEventListener('click', () => {
         div.querySelector('input[type="radio"]').checked = true;

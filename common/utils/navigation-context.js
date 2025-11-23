@@ -69,6 +69,7 @@ class NavigationContext {
     }
 
     /**
+     * Verifica si estamos en flujo de perfil de usuario
      * @returns {boolean}
      */
     isUserProfileFlow() {

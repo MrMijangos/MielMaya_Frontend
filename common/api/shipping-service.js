@@ -22,6 +22,7 @@ class ShippingService {
 
             if (!userId) throw new Error("Usuario no identificado");
 
+            // Armar el objeto para el backend de Java
             const shipment = await apiClient.post('/api/shipping-address', {
                 idUsuario: userId,
                 calle: data.calle,
@@ -33,6 +34,22 @@ class ShippingService {
             
             return { success: true, data: shipment };
         } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    // ✅ NUEVO MÉTODO PARA ELIMINAR DIRECCIÓN
+    async deleteAddress(addressId) {
+        try {
+            if (!addressId) throw new Error("ID de dirección no válido");
+            
+            console.log('🗑️ Eliminando dirección ID:', addressId);
+            
+            await apiClient.delete(`/api/shipping-address/${addressId}`);
+            
+            return { success: true };
+        } catch (error) {
+            console.error('Error eliminando dirección:', error);
             return { success: false, error: error.message };
         }
     }

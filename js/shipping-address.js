@@ -191,4 +191,4 @@ async function handleFinalizeOrder() {
         btn.textContent = "FINALIZAR COMPRA";
         btn.disabled = false;
     }
-}
+}   
