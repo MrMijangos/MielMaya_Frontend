@@ -1,4 +1,3 @@
-import { initUserSidebar } from '../common/header/header.js';
 import productService from '../common/api/product-service.js';
 import cartService from '../common/api/cart-service.js';
 import authService from '../services/auth-service.js';
@@ -20,6 +19,97 @@ function showNotification(message, type = 'success') {
         notification.classList.add('hide');
         setTimeout(() => notification.remove(), 300);
     }, 2500);
+}
+
+class UserSidebar {
+    constructor() {
+        this.init();
+        this.loadUserData();
+    }
+
+    async loadUserData() {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (userData) {
+            const userName = document.getElementById('userName');
+            if (userName) {
+                userName.textContent = userData.nombre.toUpperCase();
+            }
+        }
+    }
+
+    init() {
+        this.userButton = document.querySelector('.user-btn');
+        this.userSidebar = document.getElementById('userSidebar');
+        this.userOverlay = document.getElementById('userOverlay');
+        this.closeUserBtn = document.getElementById('closeUserBtn');
+        this.menuItems = document.querySelectorAll('.user-menu-item');
+        
+        this.userButton?.addEventListener('click', () => this.openSidebar());
+        this.closeUserBtn?.addEventListener('click', () => this.closeSidebar());
+        this.userOverlay?.addEventListener('click', () => this.closeSidebar());
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.userSidebar?.classList.contains('active')) {
+                this.closeSidebar();
+            }
+        });
+        
+        this.menuItems.forEach(item => {
+            item.addEventListener('click', (e) => this.handleMenuClick(e));
+        });
+    }
+
+    openSidebar() {
+        this.userSidebar?.classList.add('active');
+        this.userOverlay?.classList.add('active');
+        this.userSidebar?.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeSidebar() {
+        this.userSidebar?.classList.remove('active');
+        this.userOverlay?.classList.remove('active');
+        this.userSidebar?.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    handleMenuClick(e) {
+        const section = e.currentTarget.dataset.section;
+        this.menuItems.forEach(item => item.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        this.closeSidebar();
+        
+        switch(section) {
+            case 'orders':
+                window.location.href = '/html/orders.html';
+                break;
+            case 'reviews':
+                window.location.href = '/html/my-reviews.html';
+                break;
+            case 'payment':
+                window.location.href = '/html/mycards.html';
+                break;
+            case 'addresses':
+                window.location.href = '/html/addresses.html';
+                break;
+            default:
+                break;
+        }
+        
+        if (e.currentTarget.classList.contains('logout-btn')) {
+            this.logout();
+        }
+    }
+
+    async logout() {
+        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+            await authService.logout();
+            showNotification('Sesión cerrada exitosamente');
+            setTimeout(() => {
+                window.location.href = '/html/login.html';
+            }, 1000);
+        }
+    }
 }
 
 class ShoppingCart {
@@ -86,7 +176,7 @@ class ShoppingCart {
             const result = await cartService.addToCart(productId, 1);
             if (result.success) {
                 await this.loadCart();
-                showNotification('✓ Agregado');
+                showNotification('Agregado');
                 this.openCart();
             } else {
                 showNotification(result.error, 'error');
@@ -197,7 +287,6 @@ class ShoppingCart {
     }
 
     attachCartEventListeners() {
-        // Botones +/-
         this.cartItemsContainer.querySelectorAll('.qty-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = parseInt(e.target.dataset.productId);
@@ -381,13 +470,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         await authService.getCurrentUser();
-        initUserSidebar(); 
+        window.userSidebar = new UserSidebar();
     }
 
     await loadAllProducts();
-
     await loadReviews();
-
     window.cart = new ShoppingCart();
     
     document.querySelector('.btn-checkout')?.addEventListener('click', () => {

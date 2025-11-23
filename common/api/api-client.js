@@ -1,4 +1,4 @@
-// common/api/api-client.js
+// common/api/api-client.js - CORREGIDO
 
 class APIClient {
     constructor() {
@@ -14,8 +14,10 @@ class APIClient {
         }
         const url = `${this.baseURL}${fixedEndpoint}`;
         
-        console.log(' API Call:', url, options.method || 'POST');
-        console.log(' Request Body:', options.body); 
+        console.log('🌐 API Call:', url, options.method || 'POST');
+        if (options.body) {
+            console.log('📦 Request Body:', options.body); 
+        }
         
         const config = {
             ...options,
@@ -30,9 +32,8 @@ class APIClient {
         }
 
         try {
-           const response = await fetch(url, config);
-            
-            console.log(' Response Status:', response.status); 
+            const response = await fetch(url, config);
+            console.log('📡 Response Status:', response.status); 
 
             if (response.status === 204) {
                 return { success: true };
@@ -40,45 +41,59 @@ class APIClient {
 
             const text = await response.text();
             let data;
+            
             try {
-                data = JSON.parse(text); 
+                data = text ? JSON.parse(text) : null;
             } catch (e) {
-                data = { message: text };
+                // Si no es JSON válido, usar el texto directamente
+                data = text;
             }
 
-            console.log(' Response Data:', data); 
+            console.log('📄 Response Data:', data); 
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || `Error: ${response.status}`);
+                throw new Error(
+                    (data && (data.error || data.message)) || 
+                    `Error: ${response.status}`
+                );
             }
 
-            return data;
+            // ✅ ENVOLVER SIEMPRE LA RESPUESTA EN UN FORMATO ESTÁNDAR
+            return {
+                success: true,
+                data: data,
+                status: response.status
+            };
+            
         } catch (error) {
-            console.error(' API Error:', error);
-            throw error;
+            console.error('❌ API Error:', error);
+            return {
+                success: false,
+                error: error.message
+            };
         }
     }
 
-    // Métodos HTTP
-    get(endpoint) {
+    // Métodos HTTP - AHORA DEVUELVEN FORMATO ESTÁNDAR
+    async get(endpoint) {
         return this.request(endpoint, { method: 'GET' });
     }
 
-    post(endpoint, body) {
+    async post(endpoint, body) {
         return this.request(endpoint, {
             method: 'POST',
             body: JSON.stringify(body)
         });
     }
 
-    put(endpoint, body) {
+    async put(endpoint, body) {
         return this.request(endpoint, {
-            method: 'PUT',
+            method: 'PUT', 
             body: JSON.stringify(body)
         });
     }
 
-    delete(endpoint) {
+    async delete(endpoint) {
         return this.request(endpoint, { method: 'DELETE' });
     }
 
