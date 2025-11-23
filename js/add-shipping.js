@@ -1,5 +1,6 @@
 import shippingService from '../common/api/shipping-service.js';
 import authService from '../services/auth-service.js';
+import navigationContext from '../common/utils/navigation-context.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -9,9 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    const isCheckout = navigationContext.isCheckoutFlow();
+    
+    const btnAdd = document.getElementById('btnAddAddressBtn');
+    if (btnAdd) {
+        if (isCheckout) {
+            btnAdd.textContent = 'CONTINUAR CON LA COMPRA';
+        } else {
+            btnAdd.textContent = 'GUARDAR DIRECCIÓN';
+        }
+    }
+
     setupInputFormatting();
 
-    const btnAdd = document.getElementById('btnAddAddressBtn');
     if (btnAdd) {
         btnAdd.addEventListener('click', handleSaveAddress);
     }
@@ -30,10 +41,10 @@ async function handleSaveAddress(e) {
     }
 
     const street = document.getElementById('shippingStreet').value;
-    const colony = document.getElementById('shippingColony').value; 
-    const city = document.getElementById('shippingCity').value;     
-    const state = document.getElementById('shippingState').value;   
-    const zip = document.getElementById('shippingZip').value;       
+    const colony = document.getElementById('shippingColony').value;
+    const city = document.getElementById('shippingCity').value;
+    const state = document.getElementById('shippingState').value;
+    const zip = document.getElementById('shippingZip').value;
 
     const originalText = btnAdd.textContent;
     btnAdd.textContent = 'GUARDANDO...';
@@ -50,8 +61,9 @@ async function handleSaveAddress(e) {
 
         if (result.success) {
             showNotification('Dirección guardada exitosamente', 'success');
+            
             setTimeout(() => {
-                window.location.href = '../html/shipping-address.html';
+                navigationContext.returnToPreviousPage();
             }, 1500);
         } else {
             throw new Error(result.error || 'Error al guardar');

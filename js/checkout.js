@@ -1,26 +1,39 @@
+// js/checkout.js - VERSIÓN CORREGIDA
 import paymentService from '../common/api/payment-service.js';
 import authService from '../services/auth-service.js';
+import navigationContext from '../common/utils/navigation-context.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     
+    // ✅ ESTABLECER CONTEXTO: Estamos en flujo de checkout
+    navigationContext.setContext(
+        navigationContext.CONTEXTS.CHECKOUT, 
+        '/html/checkout.html'
+    );
+
+    // 1. Verificar Autenticación
     if (!authService.isAuthenticated()) {
         alert("Por favor inicia sesión para ver tus métodos de pago");
         window.location.href = '/html/login.html';
         return;
     }
 
+    // 2. Configurar botón de "Agregar Nuevo"
     const btnAdd = document.getElementById('btnAddPayment');
     if (btnAdd) {
         btnAdd.addEventListener('click', () => {
+            // ✅ Mantener el contexto antes de navegar
             window.location.href = '../html/add-payment.html';
         });
     }
 
+    // 3. Configurar botón de "Continuar/Guardar"
     const btnProceed = document.getElementById('btnProceed');
     if (btnProceed) {
         btnProceed.addEventListener('click', handleProceed);
     }
 
+    // 4. Cargar las tarjetas
     await loadPaymentMethods();
 });
 
@@ -30,10 +43,9 @@ async function loadPaymentMethods() {
     try {
         const result = await paymentService.getAllPaymentMethods();
         
-        container.innerHTML = ''; 
+        container.innerHTML = '';
 
         if (result.success && result.data.length > 0) {
-          
             result.data.forEach((card, index) => {
                 const cardHTML = createCardHTML(card, index === 0);
                 container.appendChild(cardHTML);
@@ -53,8 +65,6 @@ async function loadPaymentMethods() {
 }
 
 function createCardHTML(card, isFirst) {
-  
-    
     const div = document.createElement('div');
     div.className = 'payment-method-card';
     div.style.cssText = 'border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; align-items: center; cursor: pointer; background: #fff;';
@@ -70,24 +80,13 @@ function createCardHTML(card, isFirst) {
                 <span class="card-digits" style="color: #555;">${card.detalles}</span>
             </div>
         </div>
-
-        <button class="btn-delete" data-id="${card.idMetodoPago}" style="background:none; border:none; cursor:pointer; font-size: 1.2em;" title="Eliminar">
-            🗑️
-        </button>
     `;
+
+    // ✅ NO incluir botón de eliminar en flujo de checkout
+    // El botón solo debe aparecer en mycards.html
 
     div.addEventListener('click', () => {
         div.querySelector('input[type="radio"]').checked = true;
-    });
-
-    
-    const deleteBtn = div.querySelector('.btn-delete');
-    deleteBtn.addEventListener('click', async (e) => {
-        e.stopPropagation(); 
-        if(confirm('¿Seguro que quieres eliminar esta tarjeta?')) {
-            await paymentService.deletePaymentMethod(card.idMetodoPago);
-            loadPaymentMethods(); 
-        }
     });
 
     return div;
@@ -102,7 +101,6 @@ function handleProceed() {
     }
 
     const idMetodoPago = selected.value;
-
     localStorage.setItem('selectedPaymentId', idMetodoPago);
     
     console.log("Método de pago guardado:", idMetodoPago);

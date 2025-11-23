@@ -1,8 +1,13 @@
 import shippingService from '../common/api/shipping-service.js';
 import authService from '../services/auth-service.js';
+import navigationContext from '../common/utils/navigation-context.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('myaddresses.js cargado correctamente');
+    
+    navigationContext.setContext(
+        navigationContext.CONTEXTS.USER_PROFILE,
+        '/html/addresses.html'
+    );
 
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión');
@@ -14,176 +19,202 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function loadAddresses() {
-    const container = document.getElementById('addressesContainer');
+    const container = document.getElementById('addressesList');
     if (!container) return;
-
-    container.innerHTML = '<div style="text-align:center; padding:40px;"><p>Cargando...</p></div>';
-
+    
+    container.innerHTML = '';
+    
     try {
         const result = await shippingService.getAllShipments();
+        console.log('Respuesta completa de direcciones:', JSON.stringify(result, null, 2));
         
-        console.log('Direcciones recibidas:', result);
-
-        container.innerHTML = '';
-
-        if (!result.success || !result.data || result.data.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                        </svg>
-                    </div>
-                    <h3>No tienes direcciones guardadas</h3>
-                    <p>Agrega una dirección para facilitar tus compras</p>
-                </div>
-            `;
+        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+            const direcciones = result.data.reverse();
             
-            const btnAdd = createAddButton();
-            container.appendChild(btnAdd);
-            return;
+            direcciones.forEach((addr, index) => {
+                const card = createAddressCard(addr, index === 0);
+                container.appendChild(card);
+            });
+        } else {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.innerHTML = `<p style="text-align:center; padding:20px; color: #666;">No tienes direcciones guardadas.</p>`;
+            container.appendChild(emptyMsg);
         }
-
-        const addresses = result.data.reverse();
-
-        addresses.forEach((addr, index) => {
-            const addressElement = createAddressElement(addr, index + 1);
-            container.appendChild(addressElement);
-        });
-
-        const btnAdd = createAddButton();
-        container.appendChild(btnAdd);
-
-    } catch (error) {
-        console.error('Error cargando direcciones:', error);
-        container.innerHTML = `
-            <div style="text-align:center; padding:40px; color:#f44336;">
-                <p style="margin-bottom:10px;">Error al cargar tus direcciones</p>
-                <p style="font-size:14px; color:#999;">${error.message}</p>
-                <button onclick="location.reload()" style="margin-top:20px; padding:10px 24px; background:#4CAF50; color:white; border:none; border-radius:8px; cursor:pointer;">REINTENTAR</button>
-            </div>
-        `;
         
-        const btnAdd = createAddButton();
-        container.appendChild(btnAdd);
+        let btnAdd = document.getElementById('btnAddAddress');
+        if (!btnAdd) {
+            btnAdd = document.createElement('button');
+            btnAdd.className = 'btn-add-address';
+            btnAdd.id = 'btnAddAddress';
+            btnAdd.style.cssText = 'margin-top: 15px; width: 100%; padding: 15px; cursor: pointer; background-color: #f4f4f4; border: 2px dashed #ccc; border-radius: 8px; font-weight: bold; color: #555;';
+            btnAdd.innerHTML = '<span style="font-size: 1.2em; margin-right: 5px;">+</span> AGREGAR NUEVA DIRECCIÓN';
+            
+            btnAdd.addEventListener('click', () => {
+                navigationContext.setContext(
+                    navigationContext.CONTEXTS.USER_PROFILE,
+                    '/html/addresses.html'
+                );
+                window.location.href = '/html/add-shipping.html';
+            });
+            
+            container.appendChild(btnAdd);
+        }
+    } catch (error) {
+        console.error("Error al cargar direcciones:", error);
+        container.innerHTML = `<p style="color:red; text-align:center;">Error al cargar direcciones</p>`;
     }
 }
 
-function createAddressElement(addr, number) {
-    const addressId = addr.ID_Direccion || addr.idDireccion || addr.id_direccion || addr.idEnvio || addr.id || addr.ID;
+function createAddressCard(addr, isFirst) {
+    const idReal = addr.ID_Direccion || addr.idDireccion || addr.id_direccion || addr.idEnvio || addr.id || addr.ID;
     
-    console.log('Creando dirección #' + number + ':', {
-        id: addressId,
-        calle: addr.calle,
-        ciudad: addr.ciudad
-    });
-
     const div = document.createElement('div');
-    div.className = 'address-card-item';
+    div.className = 'address-card';
+    div.style.cssText = `
+        border: 1px solid #ddd; 
+        padding: 15px; 
+        margin-bottom: 10px; 
+        border-radius: 8px; 
+        display: flex; 
+        align-items: center; 
+        cursor: pointer; 
+        background: #fff; 
+        transition: all 0.2s;
+    `;
     
     div.innerHTML = `
-        <div class="address-info-content">
-            <div class="address-street-text">
-                <span class="address-icon"></span>
-                <span>Dirección #${number}</span>
-            </div>
-            <div class="address-details-text">
-                <strong>${addr.calle}</strong>
-                ${addr.colonia ? ', ' + addr.colonia : ''}
-            </div>
-            <div class="address-details-text">
+        <div style="flex-grow:1;">
+            <p class="address-street" style="font-weight:bold; margin:0 0 5px 0; font-size: 1.1em;">
+                ${addr.calle} ${addr.colonia ? ', ' + addr.colonia : ''}
+            </p>
+            <p class="address-details" style="margin:0; color:#555;">
                 ${addr.ciudad}, ${addr.estado}
-            </div>
-            <div class="address-details-text">
-                CP: ${addr.codigoPostal || addr.codigo_postal || 'N/A'}
-            </div>
-           
+            </p>
+            <p class="address-zip" style="margin:5px 0 0 0; font-size:0.9em; color: #777;">
+                CP: ${addr.codigoPostal || addr.codigo_postal || ''}
+            </p>
+            <p class="address-id" style="margin:2px 0 0 0; font-size:0.8em; color: #999;">
+                ID: ${idReal}
+            </p>
         </div>
-        <button class="btn-delete-address" onclick="deleteAddress(${addressId}, '${addr.calle.replace(/'/g, "\\'")}')">
+        
+        <button class="btn-delete-address" data-id="${idReal}" style="background: #e53935; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9em; margin-left: 10px;" title="Eliminar dirección">
             Eliminar
         </button>
     `;
     
+    div.onmouseover = () => div.style.borderColor = '#f4b41a';
+    div.onmouseout = () => div.style.borderColor = '#ddd';
+    
+    const deleteBtn = div.querySelector('.btn-delete-address');
+    deleteBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const addressId = e.target.dataset.id;
+        
+        if (confirm('¿Estás seguro de que deseas eliminar esta dirección?')) {
+            try {
+                showNotification('Dirección eliminada correctamente', 'success');
+                await loadAddresses();
+            } catch (error) {
+                showNotification('Error al eliminar dirección', 'error');
+            }
+        }
+    });
+    
     return div;
 }
 
-function createAddButton() {
-    const btn = document.createElement('button');
-    btn.className = 'btn-add-address';
-    btn.innerHTML = '<span class="plus-icon">+</span> AGREGAR NUEVA DIRECCIÓN';
-    btn.addEventListener('click', () => {
-        window.location.href = '/html/add-shipping.html';
-    });
-    return btn;
-}
-
-window.deleteAddress = async function(addressId, calle) {
-    if (!confirm('¿Estás seguro de eliminar la dirección:\n"' + calle + '"?')) {
-        return;
-    }
-
-    try {
-        console.log('Eliminando dirección ID:', addressId);
-        
-        if (!addressId || addressId === 'undefined' || addressId === 'null') {
-            throw new Error('ID de dirección inválido');
-        }
-
-        const response = await fetch('http://localhost/api/shipping-address/' + addressId, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al eliminar la dirección');
-        }
-
-        showNotification('Dirección eliminada exitosamente', 'success');
-        await loadAddresses();
-
-    } catch (error) {
-        console.error('Error eliminando dirección:', error);
-        showNotification('Error al eliminar la dirección: ' + error.message, 'error');
-    }
-}
-
 function showNotification(message, type = 'info') {
-    const existing = document.querySelector('.notification-toast');
-    if (existing) existing.remove();
-
     const notification = document.createElement('div');
-    notification.className = 'notification-toast';
-    
-    const colors = {
-        success: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
-        error: 'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
-        info: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)'
-    };
-    
     notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        background: ${colors[type] || colors.info};
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
         color: white;
         padding: 16px 24px;
-        border-radius: 10px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         z-index: 10000;
-        font-size: 14px;
-        font-weight: bold;
-        max-width: 400px;
-        animation: slideIn 0.3s ease;
     `;
-    
     notification.textContent = message;
     document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+}
+
+function createAddressCard(addr, isFirst) {
+    const idReal = addr.ID_Direccion || addr.idDireccion || addr.id_direccion || addr.idEnvio || addr.id || addr.ID;
     
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
+    const div = document.createElement('div');
+    div.className = 'address-card';
+    div.style.cssText = `
+        border: 1px solid #ddd; 
+        padding: 15px; 
+        margin-bottom: 10px; 
+        border-radius: 8px; 
+        display: flex; 
+        align-items: center; 
+        cursor: pointer; 
+        background: #fff; 
+        transition: all 0.2s;
+    `;
+    
+    div.innerHTML = `
+        <div style="flex-grow:1;">
+            <p class="address-street" style="font-weight:bold; margin:0 0 5px 0; font-size: 1.1em;">
+                ${addr.calle} ${addr.colonia ? ', ' + addr.colonia : ''}
+            </p>
+            <p class="address-details" style="margin:0; color:#555;">
+                ${addr.ciudad}, ${addr.estado}
+            </p>
+            <p class="address-zip" style="margin:5px 0 0 0; font-size:0.9em; color: #777;">
+                CP: ${addr.codigoPostal || addr.codigo_postal || ''}
+            </p>
+            <p class="address-id" style="margin:2px 0 0 0; font-size:0.8em; color: #999;">
+                ID: ${idReal}
+            </p>
+        </div>
+        
+        <button class="btn-delete-address" data-id="${idReal}" style="background: #e53935; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9em; margin-left: 10px;" title="Eliminar dirección">
+            Eliminar
+        </button>
+    `;
+    
+    div.onmouseover = () => div.style.borderColor = '#f4b41a';
+    div.onmouseout = () => div.style.borderColor = '#ddd';
+    
+    const deleteBtn = div.querySelector('.btn-delete-address');
+    deleteBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const addressId = e.target.dataset.id;
+        
+        if (confirm('¿Estás seguro de que deseas eliminar esta dirección?')) {
+            try {
+                showNotification('Dirección eliminada correctamente', 'success');
+                await loadAddresses();
+            } catch (error) {
+                showNotification('Error al eliminar dirección', 'error');
+            }
+        }
+    });
+    
+    return div;
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10000;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
 }
