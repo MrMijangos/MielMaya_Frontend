@@ -1,3 +1,4 @@
+// js/mycards.js - CORREGIDO
 import paymentService from '../common/api/payment-service.js';
 import authService from '../services/auth-service.js';
 import navigationContext from '../common/utils/navigation-context.js';
@@ -5,29 +6,20 @@ import navigationContext from '../common/utils/navigation-context.js';
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('✅ mycards.js cargado correctamente');
 
-    // ✅ LIMPIAR FLAG DE FLUJO DE COMPRA
-    // Esto asegura que si vienes desde el menú de usuario, no estás comprando
     localStorage.removeItem('isCheckoutFlow');
-    
-    // ✅ LIMPIAR CONTEXTO DE NAVEGACIÓN
     navigationContext.clear();
 
-    // Verificar autenticación
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión');
         window.location.href = '/html/login.html';
         return;
     }
 
-    // Cargar las tarjetas guardadas
     await loadPaymentMethods();
 
-    // Configurar botón de agregar
     const btnAddPayment = document.getElementById('btnAddPayment');
     if (btnAddPayment) {
         btnAddPayment.addEventListener('click', () => {
-            // ✅ NO establecer contexto de checkout
-            // Solo ir a agregar tarjeta sin contexto
             window.location.href = '/html/add-payment.html';
         });
     }
@@ -42,21 +34,32 @@ async function loadPaymentMethods() {
     try {
         const result = await paymentService.getAllPaymentMethods();
         
-        console.log('📋 Métodos de pago recibidos:', result);
+        console.log('📋 RESPUESTA COMPLETA:', JSON.stringify(result, null, 2));
 
-        // Normalizar respuesta (puede venir como array directo o dentro de result.data)
+        // ✅ CORRECCIÓN: Normalizar la respuesta correctamente
         let paymentsArr = [];
-        if (Array.isArray(result)) {
-            paymentsArr = result;
-        } else if (result && result.success && Array.isArray(result.data)) {
-            paymentsArr = result.data;
-        } else if (result && Array.isArray(result.data)) {
+        
+        // Si result.success existe y result.data es un array
+        if (result.success && Array.isArray(result.data)) {
             paymentsArr = result.data;
         }
+        // Si result.data.data existe (doble envoltorio)
+        else if (result.data && Array.isArray(result.data.data)) {
+            paymentsArr = result.data.data;
+        }
+        // Si result.data es un objeto con success
+        else if (result.data && result.data.success && Array.isArray(result.data.data)) {
+            paymentsArr = result.data.data;
+        }
+        // Si viene directo como array
+        else if (Array.isArray(result)) {
+            paymentsArr = result;
+        }
+
+        console.log('📦 Array normalizado:', paymentsArr);
 
         container.innerHTML = '';
 
-        // Mostrar mensaje si no hay tarjetas
         if (paymentsArr.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -73,12 +76,12 @@ async function loadPaymentMethods() {
             return;
         }
 
-        // Renderizar tarjetas
         const listContainer = document.createElement('div');
         listContainer.className = 'payment-methods-list';
 
         paymentsArr.forEach((card) => {
-            const cardId = card.idMetodoPago || card.id_metodo_pago || card.id;
+            console.log('💳 Procesando tarjeta:', card);
+            const cardId = card.idMetodoPago || card.id_metodo_pago || card.ID_MetodoPago || card.id;
             const cardElement = createCardElement(card, cardId);
             listContainer.appendChild(cardElement);
         });
@@ -113,23 +116,18 @@ function createCardElement(card, cardId) {
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     `;
     
-    // Extraer información de la tarjeta desde el campo "detalles"
     let lastDigits = '****';
     let expiration = '';
     let cardHolder = '';
     
     if (card.detalles) {
         const details = card.detalles;
-        
-        // Buscar últimos 4 dígitos
         const digitsMatch = details.match(/terminada en (\d{4})/);
         if (digitsMatch) lastDigits = digitsMatch[1];
         
-        // Buscar fecha de expiración
         const expMatch = details.match(/Exp: ([\d\/]+)/);
         if (expMatch) expiration = expMatch[1];
         
-        // Buscar titular
         const holderMatch = details.match(/Titular: ([^|]+)/);
         if (holderMatch) cardHolder = holderMatch[1].trim();
     }
@@ -168,7 +166,6 @@ function createCardElement(card, cardId) {
         </button>
     `;
     
-    // Efectos hover
     div.onmouseover = () => {
         div.style.borderColor = '#F9BD31';
         div.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
@@ -181,7 +178,6 @@ function createCardElement(card, cardId) {
     return div;
 }
 
-// ✅ FUNCIÓN GLOBAL PARA ELIMINAR (igual que en myaddresses.js)
 window.deleteCard = async function(cardId, lastDigits) {
     if (!confirm(`¿Estás seguro de eliminar la tarjeta terminada en ${lastDigits}?`)) {
         return;
@@ -194,7 +190,7 @@ window.deleteCard = async function(cardId, lastDigits) {
         
         if (result && result.success !== false) {
             showNotification('Tarjeta eliminada exitosamente', 'success');
-            await loadPaymentMethods(); // Recargar lista
+            await loadPaymentMethods();
         } else {
             throw new Error(result.error || 'Error al eliminar tarjeta');
         }

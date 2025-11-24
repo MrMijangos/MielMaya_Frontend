@@ -33,13 +33,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadPaymentMethods() {
     const container = document.getElementById('cardsContainer');
     
+    if (!container) {
+        console.error('No se encontró el contenedor cardsContainer');
+        return;
+    }
+
     try {
         const result = await paymentService.getAllPaymentMethods();
         
+        console.log('Resultado de métodos de pago:', result);
+        
         container.innerHTML = '';
 
-        if (result.success && result.data.length > 0) {
-            result.data.forEach((card, index) => {
+        let paymentsArr = [];
+        
+        if (result && result.success && result.data) {
+            if (Array.isArray(result.data)) {
+                paymentsArr = result.data;
+            } else if (result.data.data && Array.isArray(result.data.data)) {
+                paymentsArr = result.data.data;
+            }
+        } else if (Array.isArray(result)) {
+            paymentsArr = result;
+        }
+
+        console.log('Tarjetas procesadas:', paymentsArr);
+
+        if (paymentsArr.length > 0) {
+            paymentsArr.forEach((card, index) => {
                 const cardHTML = createCardHTML(card, index === 0);
                 container.appendChild(cardHTML);
             });
@@ -63,14 +84,15 @@ function createCardHTML(card, isFirst) {
     div.style.cssText = 'border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; align-items: center; cursor: pointer; background: #fff;';
     
     const checkedAttr = isFirst ? 'checked' : '';
+    const cardId = card.idMetodoPago || card.id_metodo_pago || card.ID_MetodoPago || card.id;
 
     div.innerHTML = `
-        <input type="radio" name="payment-method" value="${card.idMetodoPago}" ${checkedAttr} style="margin-right: 15px; transform: scale(1.5);">
+        <input type="radio" name="payment-method" value="${cardId}" ${checkedAttr} style="margin-right: 15px; transform: scale(1.5);">
         
         <div class="payment-card-visual" style="flex-grow: 1;">
             <div class="card-number">
-                <span style="font-weight: bold; font-size: 1.1em; display:block;">${card.tipo}</span>
-                <span class="card-digits" style="color: #555;">${card.detalles}</span>
+                <span style="font-weight: bold; font-size: 1.1em; display:block;">${card.tipo || 'Tarjeta'}</span>
+                <span class="card-digits" style="color: #555;">${card.detalles || ''}</span>
             </div>
         </div>
     `;

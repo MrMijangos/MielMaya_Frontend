@@ -1,12 +1,10 @@
+// js/myaddresses.js - CORREGIDO
 import shippingService from '../common/api/shipping-service.js';
 import authService from '../services/auth-service.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // ✅ LIMPIAR FLAG DE FLUJO DE COMPRA
-    // Esto asegura que si vienes desde el menú de usuario, no estás comprando
     localStorage.removeItem('isCheckoutFlow');
     
-    // Verificar autenticación
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión');
         window.location.href = '/html/login.html';
@@ -19,19 +17,39 @@ async function loadAddresses() {
     const container = document.getElementById('addressesList');
     if (!container) return;
     
-    // Mostrar mensaje de carga
     container.innerHTML = '<p style="text-align:center; padding:20px;">Cargando direcciones...</p>';
     
     try {
         const result = await shippingService.getAllShipments();
         console.log('🔍 RESPUESTA COMPLETA de direcciones:', JSON.stringify(result, null, 2));
         
-        // Limpiar contenedor
+        // ✅ CORRECCIÓN: Normalizar la respuesta correctamente
+        let direcciones = [];
+        
+        // Si result.success existe y result.data es un array
+        if (result.success && Array.isArray(result.data)) {
+            direcciones = result.data;
+        }
+        // Si result.data.data existe (doble envoltorio)
+        else if (result.data && Array.isArray(result.data.data)) {
+            direcciones = result.data.data;
+        }
+        // Si result.data es un objeto con success
+        else if (result.data && result.data.success && Array.isArray(result.data.data)) {
+            direcciones = result.data.data;
+        }
+        // Si viene directo como array
+        else if (Array.isArray(result)) {
+            direcciones = result;
+        }
+
+        console.log('📦 Array normalizado:', direcciones);
+        
         container.innerHTML = '';
         
-        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-            const direcciones = result.data.reverse();
-            direcciones.forEach((addr) => {
+        if (direcciones.length > 0) {
+            direcciones.reverse().forEach((addr) => {
+                console.log('🏠 Procesando dirección:', addr);
                 const card = createAddressCard(addr);
                 container.appendChild(card);
             });
@@ -42,10 +60,9 @@ async function loadAddresses() {
         }
         
     } catch (error) {
-        console.error("Error al cargar direcciones:", error);
-        container.innerHTML = `<p style="color:red; text-align:center;">Error al cargar direcciones</p>`;
+        console.error("❌ Error al cargar direcciones:", error);
+        container.innerHTML = `<p style="color:red; text-align:center;">Error al cargar direcciones: ${error.message}</p>`;
     } finally {
-        // Agregar botón SIEMPRE al final (éxito o error)
         const btnAdd = document.createElement('button');
         btnAdd.className = 'btn-add-address';
         btnAdd.id = 'btnAddAddress';
@@ -59,7 +76,16 @@ async function loadAddresses() {
 }
 
 function createAddressCard(addr) {
-    const idReal = addr.ID_Direccion || addr.idDireccion || addr.id_direccion || addr.idEnvio || addr.id || addr.ID;
+    // ✅ CORRECCIÓN: Buscar el ID en múltiples propiedades posibles
+    const idReal = addr.ID_Direccion || 
+                   addr.idDireccion || 
+                   addr.id_direccion || 
+                   addr.idEnvio || 
+                   addr.id || 
+                   addr.ID;
+    
+    console.log('🔑 ID detectado:', idReal, 'de objeto:', addr);
+    
     const div = document.createElement('div');
     div.className = 'address-card';
     div.style.cssText = `
@@ -107,7 +133,6 @@ function createAddressCard(addr) {
         </button>
     `;
     
-    // Hover effects
     div.onmouseover = () => {
         div.style.borderColor = '#f4b41a';
         div.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
@@ -117,7 +142,6 @@ function createAddressCard(addr) {
         div.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
     };
     
-    // Evento de eliminar
     const deleteBtn = div.querySelector('.btn-delete-address');
     deleteBtn.addEventListener('mouseenter', () => {
         deleteBtn.style.transform = 'translateY(-2px)';
@@ -143,7 +167,7 @@ function createAddressCard(addr) {
                 
                 if (result.success) {
                     showNotification('Dirección eliminada exitosamente', 'success');
-                    await loadAddresses(); // Recargar la lista
+                    await loadAddresses();
                 } else {
                     showNotification(result.error || 'Error al eliminar', 'error');
                     deleteBtn.textContent = originalText;
