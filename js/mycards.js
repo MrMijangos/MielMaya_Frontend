@@ -1,20 +1,33 @@
 import paymentService from '../common/api/payment-service.js';
 import authService from '../services/auth-service.js';
+import navigationContext from '../common/utils/navigation-context.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('mycards.js cargado correctamente');
+    console.log('✅ mycards.js cargado correctamente');
 
+    // ✅ LIMPIAR FLAG DE FLUJO DE COMPRA
+    // Esto asegura que si vienes desde el menú de usuario, no estás comprando
+    localStorage.removeItem('isCheckoutFlow');
+    
+    // ✅ LIMPIAR CONTEXTO DE NAVEGACIÓN
+    navigationContext.clear();
+
+    // Verificar autenticación
     if (!authService.isAuthenticated()) {
         alert('Debes iniciar sesión');
         window.location.href = '/html/login.html';
         return;
     }
 
+    // Cargar las tarjetas guardadas
     await loadPaymentMethods();
 
+    // Configurar botón de agregar
     const btnAddPayment = document.getElementById('btnAddPayment');
     if (btnAddPayment) {
         btnAddPayment.addEventListener('click', () => {
+            // ✅ NO establecer contexto de checkout
+            // Solo ir a agregar tarjeta sin contexto
             window.location.href = '/html/add-payment.html';
         });
     }
@@ -29,8 +42,9 @@ async function loadPaymentMethods() {
     try {
         const result = await paymentService.getAllPaymentMethods();
         
-        console.log('Métodos de pago recibidos:', result);
+        console.log('📋 Métodos de pago recibidos:', result);
 
+        // Normalizar respuesta (puede venir como array directo o dentro de result.data)
         let paymentsArr = [];
         if (Array.isArray(result)) {
             paymentsArr = result;
@@ -42,6 +56,7 @@ async function loadPaymentMethods() {
 
         container.innerHTML = '';
 
+        // Mostrar mensaje si no hay tarjetas
         if (paymentsArr.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -52,12 +67,13 @@ async function loadPaymentMethods() {
                         </svg>
                     </div>
                     <h3>No tienes tarjetas guardadas</h3>
-                    <p>Agrega una tarjeta para realizar compras más rápido</p>
+                    <p>Agrega una tarjeta para gestionar tus métodos de pago</p>
                 </div>
             `;
             return;
         }
 
+        // Renderizar tarjetas
         const listContainer = document.createElement('div');
         listContainer.className = 'payment-methods-list';
 
@@ -70,7 +86,7 @@ async function loadPaymentMethods() {
         container.appendChild(listContainer);
 
     } catch (error) {
-        console.error('Error cargando métodos de pago:', error);
+        console.error('❌ Error cargando métodos de pago:', error);
         container.innerHTML = `
             <div style="text-align:center; padding:40px; color:#f44336;">
                 <p style="margin-bottom:10px;">Error al cargar tus tarjetas</p>
@@ -84,7 +100,20 @@ async function loadPaymentMethods() {
 function createCardElement(card, cardId) {
     const div = document.createElement('div');
     div.className = 'payment-method-card';
+    div.style.cssText = `
+        border: 2px solid #e0e0e0;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    `;
     
+    // Extraer información de la tarjeta desde el campo "detalles"
     let lastDigits = '****';
     let expiration = '';
     let cardHolder = '';
@@ -92,12 +121,15 @@ function createCardElement(card, cardId) {
     if (card.detalles) {
         const details = card.detalles;
         
+        // Buscar últimos 4 dígitos
         const digitsMatch = details.match(/terminada en (\d{4})/);
         if (digitsMatch) lastDigits = digitsMatch[1];
         
+        // Buscar fecha de expiración
         const expMatch = details.match(/Exp: ([\d\/]+)/);
         if (expMatch) expiration = expMatch[1];
         
+        // Buscar titular
         const holderMatch = details.match(/Titular: ([^|]+)/);
         if (holderMatch) cardHolder = holderMatch[1].trim();
     }
@@ -105,45 +137,69 @@ function createCardElement(card, cardId) {
     const cardType = card.tipo || 'Tarjeta';
     
     div.innerHTML = `
-        <div class="card-content">
-            <div class="card-info">
-                <div class="card-type">
-                    <span class="card-icon"></span>
-                    <span>${cardType}</span>
-                </div>
-                <div class="card-details">
-                    <div>•••• •••• •••• ${lastDigits}</div>
-                    ${expiration ? `<div style="font-size: 0.9em; color: #888;">Exp: ${expiration}</div>` : ''}
-                    ${cardHolder ? `<div style="font-size: 0.9em; color: #888;">${cardHolder}</div>` : ''}
-                </div>
+        <div style="flex-grow:1;">
+            <div style="font-weight:bold; margin:0 0 8px 0; font-size: 1.1em; color: #333; display: flex; align-items: center; gap: 8px;">
+                <span style="display:inline-block; width:20px; height:20px; background: linear-gradient(135deg, #F9BD31 0%, #E8AD28 100%); border-radius:4px;"></span>
+                <span>${cardType}</span>
             </div>
-            <button class="btn-delete-card" onclick="deleteCard(${cardId}, '${lastDigits}')">
-                Eliminar
-            </button>
+            <div style="color:#666; font-size: 0.95em;">
+                <div style="margin-bottom: 4px;">•••• •••• •••• ${lastDigits}</div>
+                ${expiration ? `<div style="font-size: 0.9em; color: #888;">Exp: ${expiration}</div>` : ''}
+                ${cardHolder ? `<div style="font-size: 0.9em; color: #888;">${cardHolder}</div>` : ''}
+            </div>
         </div>
+        
+        <button class="btn-delete-card" onclick="deleteCard(${cardId}, '${lastDigits}')" style="
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+            flex-shrink: 0;
+        " title="Eliminar tarjeta">
+            ELIMINAR
+        </button>
     `;
+    
+    // Efectos hover
+    div.onmouseover = () => {
+        div.style.borderColor = '#F9BD31';
+        div.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+    };
+    div.onmouseout = () => {
+        div.style.borderColor = '#e0e0e0';
+        div.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+    };
     
     return div;
 }
 
+// ✅ FUNCIÓN GLOBAL PARA ELIMINAR (igual que en myaddresses.js)
 window.deleteCard = async function(cardId, lastDigits) {
-    if (!confirm('¿Estás seguro de eliminar la tarjeta terminada en ' + lastDigits + '?')) {
+    if (!confirm(`¿Estás seguro de eliminar la tarjeta terminada en ${lastDigits}?`)) {
         return;
     }
 
     try {
-        console.log('Eliminando tarjeta ID:', cardId);
+        console.log('🗑️ Eliminando tarjeta ID:', cardId);
         
         const result = await paymentService.deletePaymentMethod(cardId);
         
         if (result && result.success !== false) {
             showNotification('Tarjeta eliminada exitosamente', 'success');
-            await loadPaymentMethods();
+            await loadPaymentMethods(); // Recargar lista
         } else {
             throw new Error(result.error || 'Error al eliminar tarjeta');
         }
     } catch (error) {
-        console.error('Error eliminando tarjeta:', error);
+        console.error('❌ Error eliminando tarjeta:', error);
         showNotification('Error al eliminar la tarjeta: ' + error.message, 'error');
     }
 }

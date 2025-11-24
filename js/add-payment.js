@@ -1,3 +1,4 @@
+// js/add-payment.js - CORREGIDO CON DETECCIÓN DE FLUJO
 import paymentService from '../common/api/payment-service.js';
 import authService from '../services/auth-service.js';
 
@@ -88,8 +89,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Limpiar formulario
                 form.reset();
                 
+                // ✅ DETECTAR DE DÓNDE VIENE EL USUARIO
                 setTimeout(() => {
-                    window.location.href = '../html/checkout.html';
+                    const referrer = document.referrer;
+                    const isFromCheckout = referrer.includes('checkout.html') || 
+                                          localStorage.getItem('isCheckoutFlow') === 'true';
+                    
+                    if (isFromCheckout) {
+                        // Si viene del flujo de compra, regresar a checkout
+                        window.location.href = '../html/checkout.html';
+                    } else {
+                        // Si viene del menú de usuario, regresar a mycards
+                        window.location.href = '../html/mycards.html';
+                    }
                 }, 1500);
             } else {
                 throw new Error(result.error || 'Error desconocido del servidor');
@@ -157,7 +169,7 @@ function validateCardNumber(cardNumber) {
     return true;
 }
 
-// ✅ NUEVA: Validar fecha de expiración
+// ✅ Validar fecha de expiración
 function validateExpiration(expiration) {
     // Formato esperado: MM/AA
     const match = expiration.match(/^(\d{2})\/(\d{2})$/);
