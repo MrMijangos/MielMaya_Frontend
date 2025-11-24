@@ -164,7 +164,7 @@ class ReviewManager {
                 });
                 
                 setTimeout(() => {
-                    window.location.href = '/html/administrar-resenas.html';
+                    window.location.href = '/html/my-reviews.html';
                 }, 2000);
             } else {
                 this.showNotification(result.error || 'Error al publicar reseña', 'error');

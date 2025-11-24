@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // ✅ CARGAR TOTAL DEL CARRITO
+    loadCartTotal();
+
     const btnAdd = document.getElementById('btnAddPayment');
     if (btnAdd) {
         btnAdd.addEventListener('click', () => {
@@ -29,6 +32,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadPaymentMethods();
 });
+
+// ✅ FUNCIÓN PARA MOSTRAR TOTAL
+function loadCartTotal() {
+    const total = localStorage.getItem('cartTotal') || '0.00';
+    const totalElement = document.getElementById('checkoutTotal');
+    if (totalElement) {
+        totalElement.textContent = `$${total}`;
+    }
+}
 
 async function loadPaymentMethods() {
     const container = document.getElementById('cardsContainer');

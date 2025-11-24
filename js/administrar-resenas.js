@@ -17,7 +17,8 @@ class ReviewAdmin {
 
     async loadReviews() {
         try {
-            const result = await reviewService.getMyReviews();
+            // Cambiar para obtener TODAS las reseñas, no solo las del usuario
+            const result = await reviewService.getAllReviews(); // Necesitas crear este método
             if (result.success) {
                 this.reviews = result.data || [];
                 this.renderReviews();
@@ -33,15 +34,16 @@ class ReviewAdmin {
 
     renderReviews() {
         const grid = document.getElementById('reviewsGrid');
+        if (!grid) {
+            console.error('No se encontró el elemento reviewsGrid');
+            return;
+        }
         
         if (this.reviews.length === 0) {
             grid.innerHTML = `
                 <div class="empty-state">
-                    <h3>No tienes reseñas aún</h3>
-                    <p>Comparte tu experiencia con nuestros productos</p>
-                    <a href="/html/agregar-resena.html" class="btn-view-all">
-                        Agregar Primera Reseña
-                    </a>
+                    <h3>No hay reseñas en el sistema</h3>
+                    <p>Los clientes aún no han agregado reseñas</p>
                 </div>
             `;
             return;
@@ -52,6 +54,7 @@ class ReviewAdmin {
                 <div class="review-header">
                     <div>
                         <div class="review-product">${review.nombreProducto || 'Producto'}</div>
+                        <div class="review-user">Usuario: ${review.nombreUsuario || 'Anónimo'}</div>
                         <div class="review-rating">${this.generateStars(review.Calificacion || review.calificacion)}</div>
                     </div>
                     <div class="review-actions">
@@ -69,7 +72,8 @@ class ReviewAdmin {
     }
 
     generateStars(rating) {
-        return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+        const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+        return `${stars} (${rating}/5)`;
     }
 
     formatDate(dateString) {
@@ -86,15 +90,18 @@ class ReviewAdmin {
     }
 
     updateStats() {
-        document.getElementById('totalReviews').textContent = this.reviews.length;
+        const totalReviews = document.getElementById('totalReviews');
+        const averageRating = document.getElementById('averageRating');
         
-        if (this.reviews.length > 0) {
+        if (totalReviews) totalReviews.textContent = this.reviews.length;
+        
+        if (averageRating && this.reviews.length > 0) {
             const totalRating = this.reviews.reduce((sum, review) => 
-                sum + (review.Calificacion || review.calificacion), 0);
+                sum + (review.Calificacion || review.calificacion || 0), 0);
             const average = totalRating / this.reviews.length;
-            document.getElementById('averageRating').textContent = average.toFixed(1);
-        } else {
-            document.getElementById('averageRating').textContent = '0';
+            averageRating.textContent = average.toFixed(1);
+        } else if (averageRating) {
+            averageRating.textContent = '0';
         }
     }
 
@@ -107,7 +114,7 @@ class ReviewAdmin {
             const result = await reviewService.deleteReview(reviewId);
             if (result.success) {
                 this.showNotification('Reseña eliminada exitosamente', 'success');
-                await this.loadReviews(); // Recargar la lista
+                await this.loadReviews();
             } else {
                 this.showNotification(result.error || 'Error al eliminar reseña', 'error');
             }
@@ -118,6 +125,7 @@ class ReviewAdmin {
     }
 
     showNotification(message, type = 'info') {
+        // ... (mantén tu código de notificación igual)
         const notification = document.createElement('div');
         notification.className = 'notification';
         notification.style.cssText = `
@@ -154,7 +162,6 @@ class ReviewAdmin {
         }, 3000);
     }
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
     window.reviewAdmin = new ReviewAdmin();

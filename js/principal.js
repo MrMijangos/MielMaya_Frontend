@@ -353,7 +353,7 @@ async function loadReviews() {
         }
     }
 
-    const limitedReviews = allReviews.slice(0, 6);
+    const limitedReviews = allReviews.slice(0, 10);
     if (limitedReviews.length === 0) {
         reviewsGrid.innerHTML = '<p class="empty-msg">No hay reseñas disponibles.</p>';
         return;

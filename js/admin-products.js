@@ -387,3 +387,6 @@ const authService = {
         }
     }
 };
+window.redirectToReviews = function() {
+    window.location.href = '/html/administrar-resenas.html';
+};

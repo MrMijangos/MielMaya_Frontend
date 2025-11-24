@@ -1,3 +1,4 @@
+const API_BASE_URL = 'http://localhost:7000/api';
 import APIClient from './api-client.js';
 import authService from '../../services/auth-service.js';
 
@@ -88,6 +89,18 @@ class ReviewService {
             return { success: false, error: error.message };
         }
     }
+    async getAllReviews() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/reviews`);
+        const data = await response.json();
+        return { success: response.ok, data };
+    } catch (error) {
+        console.error('Error obteniendo todas las reseñas:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
 }
+}
+
+
 
 export default new ReviewService();
