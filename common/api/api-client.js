@@ -1,4 +1,3 @@
-// common/api/api-client.js - CORREGIDO
 
 class APIClient {
     constructor() {
@@ -6,7 +5,6 @@ class APIClient {
         this.token = localStorage.getItem('authToken');
     }
 
-    // Método genérico para hacer peticiones
     async request(endpoint, options = {}) {
         let fixedEndpoint = endpoint;
         if (!fixedEndpoint.startsWith('/')) {
@@ -14,9 +12,9 @@ class APIClient {
         }
         const url = `${this.baseURL}${fixedEndpoint}`;
         
-        console.log('🌐 API Call:', url, options.method || 'POST');
+        console.log(' API Call:', url, options.method || 'POST');
         if (options.body) {
-            console.log('📦 Request Body:', options.body); 
+            console.log('Request Body:', options.body); 
         }
         
         const config = {
@@ -33,7 +31,7 @@ class APIClient {
 
         try {
             const response = await fetch(url, config);
-            console.log('📡 Response Status:', response.status); 
+            console.log(' Response Status:', response.status); 
 
             if (response.status === 204) {
                 return { success: true };
@@ -45,11 +43,10 @@ class APIClient {
             try {
                 data = text ? JSON.parse(text) : null;
             } catch (e) {
-                // Si no es JSON válido, usar el texto directamente
                 data = text;
             }
 
-            console.log('📄 Response Data:', data); 
+            console.log(' Response Data:', data); 
 
             if (!response.ok) {
                 throw new Error(
@@ -58,7 +55,6 @@ class APIClient {
                 );
             }
 
-            // ✅ ENVOLVER SIEMPRE LA RESPUESTA EN UN FORMATO ESTÁNDAR
             return {
                 success: true,
                 data: data,
@@ -66,7 +62,7 @@ class APIClient {
             };
             
         } catch (error) {
-            console.error('❌ API Error:', error);
+            console.error(' API Error:', error);
             return {
                 success: false,
                 error: error.message
@@ -74,7 +70,6 @@ class APIClient {
         }
     }
 
-    // Métodos HTTP - AHORA DEVUELVEN FORMATO ESTÁNDAR
     async get(endpoint) {
         return this.request(endpoint, { method: 'GET' });
     }
@@ -97,19 +92,16 @@ class APIClient {
         return this.request(endpoint, { method: 'DELETE' });
     }
 
-    // Guardar token
     setToken(token) {
         this.token = token;
         localStorage.setItem('authToken', token);
     }
 
-    // Eliminar token
     clearToken() {
         this.token = null;
         localStorage.removeItem('authToken');
     }
 }
 
-// Instancia global
 const apiClient = new APIClient();
 export default apiClient;

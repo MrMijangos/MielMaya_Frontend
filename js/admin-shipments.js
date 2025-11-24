@@ -173,7 +173,6 @@ function filterShipments(status) {
     });
 
     const container = document.getElementById('shipmentsList');
-    // Remover mensaje "vacío" anterior si existe
     const msg = document.getElementById('msg-empty');
     if (msg) msg.remove();
 
